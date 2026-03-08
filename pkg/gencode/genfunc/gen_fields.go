@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-// 注意：此功能依赖于 ginp-api/internal/app/gapi/setting 包
+// 注意：此功能依赖于 ginp-api/internal/gapi/setting 包
 // 该包包含 EntityGenerationList，需要在业务项目中实现
 // 如果不需要此功能，可以注释掉以下代码
 

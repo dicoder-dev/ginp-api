@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"ginp-api/cmd/gencode/swagen"
-	"ginp-api/internal/app/gapi/router"
+	"ginp-api/internal/gapi/router"
 
 	"github.com/spf13/cobra"
 )

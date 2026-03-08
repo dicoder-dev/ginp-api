@@ -7,7 +7,7 @@ package swagen
 
 import (
 	"fmt"
-	"ginp-api/internal/app/gapi/router"
+	"ginp-api/internal/gapi/router"
 	"testing"
 )
 

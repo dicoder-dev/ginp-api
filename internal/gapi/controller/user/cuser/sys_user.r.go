@@ -1,4 +1,4 @@
-package c$PACKAGE_NAME$
+package cuser
 
 import (
 	"ginp-api/internal/gapi/dto/comdto"
@@ -8,95 +8,86 @@ import (
 )
 
 const (
-	ApiCreate   = "/api/$ENTITY_LINE$/create"
-	ApiFindById = "/api/$ENTITY_LINE$/findById"
-	ApiSearch   = "/api/$ENTITY_LINE$/search"
-	ApiUpdate   = "/api/$ENTITY_LINE$/update"
-	ApiDelete   = "/api/$ENTITY_LINE$/delete"
+	ApiUserCreate   = "/api/sys_user/create"
+	ApiUserFindById = "/api/sys_user/findById"
+	ApiUserSearch   = "/api/sys_user/search"
+	ApiUserUpdate   = "/api/sys_user/update"
+	ApiUserDelete   = "/api/sys_user/delete"
 )
-
-
-type UpdateDto struct {
-	ID         int                `json:"id"`
-	//更新的实体数据
-	UpdateData *entity.$ENTITY_LINE$ `json:"xl_trip_item"`
-	//指定更新字段 空数组表示自动更新非零值
-	UpdateFields []string `json:"update_fields"`
-}
 
 // this is router define file
 func init() {
 
 	// Create
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiCreate,                    //api路径
+		Path:           ApiUserCreate,                //api路径
 		Handlers:       ginp.RegisterHandler(Create), //对应控制器
 		HttpType:       ginp.HttpPost,                //http请求类型
 		NeedLogin:      false,                        //是否需要登录
 		NeedPermission: false,                        //是否需要鉴权
-		PermissionName: "$PACKAGE_NAME$.create",           //完整的权限名称,会跟权限表匹配
+		PermissionName: "SysUse.create",              //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "create $ENTITY_LINE$",
+			Title:       "create user",
 			Description: "",
-			RequestDto:  entity.$ENTITY_NAME${},
+			RequestDto:  entity.User{},
 		},
 	})
 
 	// FindById
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiFindById,                    //api路径
+		Path:           ApiUserFindById,                //api路径
 		Handlers:       ginp.RegisterHandler(FindByID), //对应控制器
 		HttpType:       ginp.HttpPost,                  //http请求类型
 		NeedLogin:      false,                          //是否需要登录
 		NeedPermission: false,                          //是否需要鉴权
-		PermissionName: "$PACKAGE_NAME$.findById",           //完整的权限名称,会跟权限表匹配
+		PermissionName: "SysUse.findById",              //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "find $ENTITY_LINE$ by id",
+			Title:       "find user by id",
 			Description: "",
-			RequestDto:  entity.$ENTITY_NAME${},
+			RequestDto:  entity.User{},
 		},
 	})
 
 	// 修改
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiUpdate,                    //api路径
+		Path:           ApiUserUpdate,                //api路径
 		Handlers:       ginp.RegisterHandler(Update), //对应控制器
 		HttpType:       ginp.HttpPost,                //http请求类型
 		NeedLogin:      true,                         //是否需要登录
 		NeedPermission: true,                         //是否需要鉴权
-		PermissionName: "$PACKAGE_NAME$.update",           //完整的权限名称,会跟权限表匹配
+		PermissionName: "SysUse.update",              //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "modify $ENTITY_LINE$",
+			Title:       "modify user",
 			Description: "",
-			RequestDto:  UpdateDto{},
+			RequestDto:  entity.User{},
 		},
 	})
 
 	// 删除
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiDelete,                    //api路径
+		Path:           ApiUserDelete,                //api路径
 		Handlers:       ginp.RegisterHandler(Delete), //对应控制器
 		HttpType:       ginp.HttpPost,                //http请求类型
 		NeedLogin:      true,                         //是否需要登录
 		NeedPermission: true,                         //是否需要鉴权
-		PermissionName: "$PACKAGE_NAME$.delete",           //完整的权限名称,会跟权限表匹配
+		PermissionName: "SysUse.delete",              //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "delet $ENTITY_LINE$",
+			Title:       "delet user",
 			Description: "",
-			RequestDto:  entity.$ENTITY_NAME${},
+			RequestDto:  entity.User{},
 		},
 	})
 
 	// search 搜索
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiSearch,                    //api路径
+		Path:           ApiUserSearch,                //api路径
 		Handlers:       ginp.RegisterHandler(Search), //对应控制器
 		HttpType:       ginp.HttpPost,                //http请求类型
-		NeedLogin:      true,                         //是否需要登录
-		NeedPermission: true,                         //是否需要鉴权
-		PermissionName: "$PACKAGE_NAME$.search",           //完整的权限名称,会跟权限表匹配
+		NeedLogin:      false,                        //是否需要登录
+		NeedPermission: false,                        //是否需要鉴权
+		PermissionName: "SysUse.search",              //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "search $ENTITY_LINE$",
+			Title:       "search user",
 			Description: "",
 			RequestDto:  comdto.ReqSearch{},
 		},

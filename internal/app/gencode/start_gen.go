@@ -1,5 +1,0 @@
-package gencode
-
-func StartGen() {
-
-}
