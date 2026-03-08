@@ -1,8 +1,8 @@
 package templates
 
 import (
-	"ginp-api/cmd/gencode/desc"
-	"ginp-api/internal/gen"
+	"ginp-api/pkg/gencode/gen"
+	"ginp-api/pkg/gencode/genfunc"
 	"testing"
 )
 
@@ -17,41 +17,41 @@ func TestReplace(t *testing.T) {
 	demoApiLineName := "demo_add_api"
 
 	replaceData := map[string]string{
-		demoEntityLineName: desc.ReplaceLineName,
-		demoEntityBigName:  desc.ReplaceEntityName,
-		demoPackageName:    desc.ReplacePackageName,
-		demoApiBigName:     desc.ReplaceApiNameBig,
-		demoApiLineName:    desc.ReplaceApiNameLine,
+		demoEntityLineName: genfunc.ReplaceLineName,
+		demoEntityBigName:  genfunc.ReplaceEntityName,
+		demoPackageName:    genfunc.ReplacePackageName,
+		demoApiBigName:     genfunc.ReplaceApiNameBig,
+		demoApiLineName:    genfunc.ReplaceApiNameLine,
 	}
 
 	//1.开始生成：entity文件
-	tPathEntity := desc.TemplatePathEntity()
-	oPathEntity := desc.PathEntity(demoEntityLineName)
+	tPathEntity := genfunc.TemplatePathEntity()
+	oPathEntity := genfunc.PathEntity(demoEntityLineName)
 	gen.ReplaceAndWriteTemplate(oPathEntity, tPathEntity, replaceData)
 
 	//2.开始生成：router文件
-	tPathRouter := desc.TemplatePathRouter()
-	oPathRouter := desc.PathRouter(demoEntityLineName)
+	tPathRouter := genfunc.TemplatePathRouter()
+	oPathRouter := genfunc.PathRouter(demoEntityLineName)
 	gen.ReplaceAndWriteTemplate(oPathRouter, tPathRouter, replaceData)
 
 	//3.开始生成：controller文件
-	tPathController := desc.TemplatePathController()
-	oPathController := desc.PathController(demoEntityLineName)
+	tPathController := genfunc.TemplatePathController()
+	oPathController := genfunc.PathController(demoEntityLineName)
 	gen.ReplaceAndWriteTemplate(oPathController, tPathController, replaceData)
 
 	//4.开始生成：service文件
-	tPathService := desc.TemplatePathService()
-	oPathService := desc.PathService(demoEntityLineName)
+	tPathService := genfunc.TemplatePathService()
+	oPathService := genfunc.PathService(demoEntityLineName)
 	gen.ReplaceAndWriteTemplate(oPathService, tPathService, replaceData)
 
 	//5.开始生成：model文件
-	tPathRepository := desc.TemplatePathModel()
-	oPathRepository := desc.PathModel(demoEntityLineName)
+	tPathRepository := genfunc.TemplatePathModel()
+	oPathRepository := genfunc.PathModel(demoEntityLineName)
 	gen.ReplaceAndWriteTemplate(oPathRepository, tPathRepository, replaceData)
 
 	//6.开始生成：api文件
-	// tPathApi := desc.TemplatePathAddApi()
-	// oPathApi := desc.PathAddApi(demoEntityLineName, demoApiLineName)
+	// tPathApi := genfunc.TemplatePathAddApi()
+	// oPathApi := genfunc.PathAddApi(demoEntityLineName, demoApiLineName)
 	// println(oPathApi + "\n" + tPathApi)
 	// gen.ReplaceAndWriteTemplate(oPathApi, tPathApi, replaceData)
 }
