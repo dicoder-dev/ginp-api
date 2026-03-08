@@ -13,6 +13,7 @@ db:
         user: root
     sqlite:
         db_path: data.db
+    use_type: sqlite
 email:
     client:
         account: dicoder@126.com

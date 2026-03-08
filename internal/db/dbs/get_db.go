@@ -19,8 +19,15 @@ var useDbType = DbTypePgsql
 
 func init() {
 	dbType := configs.SystemDbType()
-	if dbType != "" {
+	switch dbType {
+	case "mysql":
+		useDbType = DbTypeMysql
+	case "pgsql", "postgresql":
 		useDbType = DbTypePgsql
+	case "sqlite":
+		useDbType = DbTypeSqlite
+	default:
+		useDbType = DbTypeMysql
 	}
 }
 

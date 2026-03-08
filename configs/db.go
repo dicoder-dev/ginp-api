@@ -2,6 +2,11 @@ package configs
 
 import "ginp-api/pkg/cfg"
 
+// 适用的数据库类型: mysql,pgsql,sqlite
+const ConfigKeySystemDbType = "db.use_type"
+
+const defaultSystemDbType = "mysql"
+
 // -------------------------Mysql-------------------------
 const ConfigKeyMysqlPort = "db.mysql.port"
 const ConfigKeyMysqlIp = "db.mysql.ip"
@@ -10,6 +15,7 @@ const ConfigKeyMysqlPwd = "db.mysql.pwd"
 const ConfigKeyMysqlDb = "db.mysql.dbname"
 
 func init() { // 设置默认值
+	cfg.SetDefault(ConfigKeySystemDbType, defaultSystemDbType)
 	cfg.SetDefault(ConfigKeyMysqlIp, "127.0.0.1")
 	cfg.SetDefault(ConfigKeyMysqlPort, "3306")
 	cfg.SetDefault(ConfigKeyMysqlUser, "root")
@@ -31,6 +37,10 @@ func MysqlPwd() string {
 }
 func MysqlDb() string {
 	return cfg.GetString(ConfigKeyMysqlDb)
+}
+
+func SystemDbType() string {
+	return cfg.GetString(ConfigKeySystemDbType)
 }
 
 // -------------------------Sqlite-------------------------

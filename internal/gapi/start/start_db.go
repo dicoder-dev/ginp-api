@@ -2,13 +2,13 @@ package start
 
 import (
 	"fmt"
+	"ginp-api/configs"
 	"ginp-api/internal/db/dbs"
-	"ginp-api/pkg/cfg"
 )
 
 func startDB() {
-	// 根据配置文件中的 system.db.type 决定使用哪种数据库
-	dbType := cfg.GetString("system.db.type")
+	// 根据配置文件中的 db.use_type 决定使用哪种数据库
+	dbType := configs.SystemDbType()
 
 	switch dbType {
 	case "pgsql", "postgresql":
