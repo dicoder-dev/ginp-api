@@ -13,12 +13,12 @@ import (
 
 func init() {
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           "/api/common/upload",               //api路径
+		Path:           "/api/common/upload",                            //api路径
 		Handler:        ginp.BindParamsHandler(Upload, RequestUpload{}), //对应控制器
-		HttpType:       ginp.HttpPost,                       //http请求类型
-		NeedLogin:      true,                                //是否需要登录
-		NeedPermission: true,                               //是否需要鉴权
-		PermissionName: "Common.upload",                     //完整的权限名称,会跟权限表匹配
+		HttpType:       ginp.HttpPost,                                   //http请求类型
+		NeedLogin:      true,                                            //是否需要登录
+		NeedPermission: true,                                            //是否需要鉴权
+		PermissionName: "Common.upload",                                 //完整的权限名称,会跟权限表匹配
 	})
 }
 

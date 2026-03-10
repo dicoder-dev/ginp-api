@@ -31,9 +31,9 @@ func init() {
 	})
 }
 
-func SysUserUpdate(c *ginp.ContextPlus, params *RequestSysUserUpdate) {
-	wheres := where.Format(where.OptEqual("id", params.User.ID))
-	err := suser.Model().Update(wheres, &params.User)
+func SysUserUpdate(c *ginp.ContextPlus, requestParams *RequestSysUserUpdate) {
+	wheres := where.Format(where.OptEqual("id", requestParams.User.ID))
+	err := suser.Model().Update(wheres, &requestParams.User)
 	if err != nil {
 		c.Fail("修改失败" + err.Error())
 		return

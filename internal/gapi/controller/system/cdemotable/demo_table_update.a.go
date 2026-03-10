@@ -31,9 +31,9 @@ func init() {
 	})
 }
 
-func DemoTableUpdate(c *ginp.ContextPlus, params *RequestDemoTableUpdate) {
-	wheres := where.Format(where.OptEqual("id", params.DemoTable.ID))
-	err := sdemotable.Model().Update(wheres, &params.DemoTable)
+func DemoTableUpdate(c *ginp.ContextPlus, requestParams *RequestDemoTableUpdate) {
+	wheres := where.Format(where.OptEqual("id", requestParams.DemoTable.ID))
+	err := sdemotable.Model().Update(wheres, &requestParams.DemoTable)
 	if err != nil {
 		c.FailData("修改失败" + err.Error())
 		return

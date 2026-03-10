@@ -30,8 +30,8 @@ func init() {
 	})
 }
 
-func SysUserDelete(c *ginp.ContextPlus, params *RequestSysUserDelete) {
-	err := suser.Model().DeleteById(params.ID)
+func SysUserDelete(c *ginp.ContextPlus, requestParams *RequestSysUserDelete) {
+	err := suser.Model().DeleteById(requestParams.ID)
 	if err != nil {
 		c.Fail("删除失败" + err.Error())
 		return

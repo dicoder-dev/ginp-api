@@ -27,8 +27,8 @@ func init() {
 	})
 }
 
-func FindByID(ctx *ginp.ContextPlus, params *comdto.ReqFindById) error {
-	info, err := s$PACKAGE_NAME$.Model().FindOneById(params.ID)
+func FindByID(ctx *ginp.ContextPlus, requestParams *comdto.ReqFindById) error {
+	info, err := s$PACKAGE_NAME$.Model().FindOneById(requestParams.ID)
 	if err != nil {
 		return err
 	}

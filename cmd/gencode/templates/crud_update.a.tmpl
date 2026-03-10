@@ -27,10 +27,10 @@ func init() {
 	})
 }
 
-func Update(ctx *ginp.ContextPlus, params *UpdateDto) error {
-	wheres := where.Format(where.OptEqual("id", params.ID))
+func Update(ctx *ginp.ContextPlus, requestParams *UpdateDto) error {
+	wheres := where.Format(where.OptEqual("id", requestParams.ID))
 	//也可以自己创建并传入读写db: tables.New$ENTITY_NAME$(wdb,rdb)
-	err := s$PACKAGE_NAME$.Model().Update(wheres, params.UpdateData, params.UpdateFields...)
+	err := s$PACKAGE_NAME$.Model().Update(wheres, requestParams.UpdateData, requestParams.UpdateFields...)
 	if err != nil {
 		return err
 	}

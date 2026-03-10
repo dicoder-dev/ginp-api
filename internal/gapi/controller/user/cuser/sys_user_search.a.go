@@ -35,12 +35,12 @@ func init() {
 	})
 }
 
-func SysUserSearch(c *ginp.ContextPlus, params *RequestSysUserSearch) {
-	if where.Check(params.Wheres) != nil {
-		c.Fail(where.Check(params.Wheres).Error())
+func SysUserSearch(c *ginp.ContextPlus, requestParams *RequestSysUserSearch) {
+	if where.Check(requestParams.Wheres) != nil {
+		c.Fail(where.Check(requestParams.Wheres).Error())
 		return
 	}
-	list, total, err := suser.Model().FindList(params.Wheres, params.Extra)
+	list, total, err := suser.Model().FindList(requestParams.Wheres, requestParams.Extra)
 	if err != nil {
 		c.Fail("查询失败" + err.Error())
 		return
@@ -49,8 +49,8 @@ func SysUserSearch(c *ginp.ContextPlus, params *RequestSysUserSearch) {
 	resp := &RespondSysUserSearch{
 		List:     list,
 		Total:    uint(total),
-		PageNum:  uint(params.Extra.PageNum),
-		PageSize: uint(params.Extra.PageSize),
+		PageNum:  uint(requestParams.Extra.PageNum),
+		PageSize: uint(requestParams.Extra.PageSize),
 	}
 	c.SuccessData(resp)
 }

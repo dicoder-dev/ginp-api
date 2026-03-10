@@ -30,8 +30,8 @@ func init() {
 	})
 }
 
-func DemoTableDelete(c *ginp.ContextPlus, params *RequestDemoTableDelete) {
-	err := sdemotable.Model().DeleteById(params.ID)
+func DemoTableDelete(c *ginp.ContextPlus, requestParams *RequestDemoTableDelete) {
+	err := sdemotable.Model().DeleteById(requestParams.ID)
 	if err != nil {
 		c.FailData("delete fail :" + err.Error())
 		return

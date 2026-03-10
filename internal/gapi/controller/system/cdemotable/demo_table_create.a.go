@@ -30,8 +30,8 @@ func init() {
 	})
 }
 
-func DemoTableCreate(c *ginp.ContextPlus, params *RequestDemoTableCreate) {
-	info, err := sdemotable.Model().Create(&params.DemoTable)
+func DemoTableCreate(c *ginp.ContextPlus, requestParams *RequestDemoTableCreate) {
+	info, err := sdemotable.Model().Create(&requestParams.DemoTable)
 	if err != nil {
 		c.FailData(err.Error())
 		return

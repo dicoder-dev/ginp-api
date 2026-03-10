@@ -34,8 +34,8 @@ func init() {
 	})
 }
 
-func DemoTableSearch(c *ginp.ContextPlus, params *RequestDemoTableSearch) {
-	list, total, err := sdemotable.Model().FindList(params.Wheres, params.Extra)
+func DemoTableSearch(c *ginp.ContextPlus, requestParams *RequestDemoTableSearch) {
+	list, total, err := sdemotable.Model().FindList(requestParams.Wheres, requestParams.Extra)
 	if err != nil {
 		c.FailData(err.Error())
 		return
@@ -44,8 +44,8 @@ func DemoTableSearch(c *ginp.ContextPlus, params *RequestDemoTableSearch) {
 	resp := &RespondDemoTableSearch{
 		List:     list,
 		Total:    uint(total),
-		PageNum:  uint(params.Extra.PageNum),
-		PageSize: uint(params.Extra.PageSize),
+		PageNum:  uint(requestParams.Extra.PageNum),
+		PageSize: uint(requestParams.Extra.PageSize),
 	}
 	c.SuccessData(resp)
 }

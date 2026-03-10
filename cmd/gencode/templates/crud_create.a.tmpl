@@ -27,9 +27,9 @@ func init() {
 	})
 }
 
-func Create(ctx *ginp.ContextPlus, params *entity.$ENTITY_NAME$) error {
+func Create(ctx *ginp.ContextPlus, requestParams *entity.$ENTITY_NAME$) error {
 	//也可以自己创建并传入读写db: tables.New$ENTITY_NAME$(wdb,rdb)
-	info, err := s$PACKAGE_NAME$.Model().Create(params)
+	info, err := s$PACKAGE_NAME$.Model().Create(requestParams)
 	if err != nil {
 		return err
 	}

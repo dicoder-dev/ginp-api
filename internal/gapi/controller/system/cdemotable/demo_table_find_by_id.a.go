@@ -30,8 +30,8 @@ func init() {
 	})
 }
 
-func DemoTableFindById(c *ginp.ContextPlus, params *RequestDemoTableFindById) {
-	info, err := sdemotable.Model().FindOneById(params.ID)
+func DemoTableFindById(c *ginp.ContextPlus, requestParams *RequestDemoTableFindById) {
+	info, err := sdemotable.Model().FindOneById(requestParams.ID)
 	if err != nil {
 		c.FailData(err.Error())
 		return

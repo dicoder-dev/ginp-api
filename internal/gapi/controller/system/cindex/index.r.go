@@ -20,6 +20,6 @@ func init() {
 	})
 }
 
-func IndexView(c *ginp.ContextPlus, params *RequestIndex) {
+func IndexView(c *ginp.ContextPlus, requestParams *RequestIndex) {
 	c.HTML(200, "index.html", gin.H{})
 }

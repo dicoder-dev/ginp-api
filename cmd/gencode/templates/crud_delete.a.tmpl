@@ -27,9 +27,9 @@ func init() {
 	})
 }
 
-func Delete(ctx *ginp.ContextPlus, params *comdto.ReqDelete) error {
+func Delete(ctx *ginp.ContextPlus, requestParams *comdto.ReqDelete) error {
 	//也可以自己创建并传入读写db: tables.New$ENTITY_NAME$(wdb,rdb)
-	err := s$PACKAGE_NAME$.Model().DeleteById(params.ID)
+	err := s$PACKAGE_NAME$.Model().DeleteById(requestParams.ID)
 	if err != nil {
 		return err
 	}

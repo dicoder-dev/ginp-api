@@ -30,8 +30,8 @@ func init() {
 	})
 }
 
-func SysUserFindById(c *ginp.ContextPlus, params *RequestSysUserFindById) {
-	info, err := suser.Model().FindOneById(params.ID)
+func SysUserFindById(c *ginp.ContextPlus, requestParams *RequestSysUserFindById) {
+	info, err := suser.Model().FindOneById(requestParams.ID)
 	if err != nil {
 		c.Fail(err.Error())
 		return

@@ -29,12 +29,12 @@ func init() {
 	})
 }
 
-func Search(ctx *ginp.ContextPlus, params *comdto.ReqSearch) error {
-	if err := where.Check(params.Wheres); err != nil {
+func Search(ctx *ginp.ContextPlus, requestParams *comdto.ReqSearch) error {
+	if err := where.Check(requestParams.Wheres); err != nil {
 		return err
 	}
 	//也可以自己创建并传入读写db: tables.New$ENTITY_NAME$(wdb,rdb)
-	list, total, err := s$PACKAGE_NAME$.Model().FindListWithRelations(params.Wheres, params.Extra, params.Relations)
+	list, total, err := s$PACKAGE_NAME$.Model().FindListWithRelations(requestParams.Wheres, requestParams.Extra, requestParams.Relations)
 	if err != nil {
 		return err
 	}

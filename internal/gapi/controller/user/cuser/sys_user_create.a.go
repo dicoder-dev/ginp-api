@@ -30,8 +30,8 @@ func init() {
 	})
 }
 
-func SysUserCreate(c *ginp.ContextPlus, params *RequestSysUserCreate) {
-	info, err := suser.Model().Create(&params.User)
+func SysUserCreate(c *ginp.ContextPlus, requestParams *RequestSysUserCreate) {
+	info, err := suser.Model().Create(&requestParams.User)
 	if err != nil {
 		c.Fail("创建失败" + err.Error())
 		return
