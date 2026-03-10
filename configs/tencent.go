@@ -2,11 +2,15 @@ package configs
 
 import "ginp-api/pkg/cfg"
 
-// TencentCos 全局配置变量
-var TencentCos = new(TencentCosConfig)
+// Tencent 全局配置变量
+var Tencent = new(TencentConfig)
+
+type TencentConfig struct {
+	Cos Cos `default:""`
+}
 
 // TencentCosConfig 腾讯云COS配置
-type TencentCosConfig struct {
+type Cos struct {
 	SecretID    string `default:""`
 	SecretKey   string `default:""`
 	BucketName  string `default:""`
@@ -17,5 +21,5 @@ type TencentCosConfig struct {
 }
 
 func init() {
-	cfg.ParseConfigStruct(TencentCos)
+	cfg.ParseConfigStruct(Tencent)
 }

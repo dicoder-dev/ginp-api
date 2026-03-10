@@ -137,18 +137,17 @@ func initDefaultsStruct(ptr any, prefix string) error {
 			configKey = prefix + "." + toLowerSnakeCase(field.Name)
 		}
 
-		// 获取默认值
-		defaultValue := field.Tag.Get(TagDefault)
-		if defaultValue == "" {
-			continue
-		}
+		// 使用 Lookup 检查 default 标签是否存在（区分"标签不存在"和"标签存在但为空"）
+		defaultValue, hasDefault := field.Tag.Lookup(TagDefault)
 
-		// 如果配置文件中没有值，则写入默认值
-		val := Get(configKey)
-		if val == nil || val == "" {
-			err := instance.Set(configKey, defaultValue)
-			if err != nil {
-				return err
+		// 如果配置文件中没有值，则写入默认值（无论默认值是否为空字符串）
+		if hasDefault {
+			val := Get(configKey)
+			if val == nil || val == "" {
+				err := instance.Set(configKey, defaultValue)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -271,7 +270,8 @@ func parseStruct(ptr any, prefix string) {
 
 		// 检查是否指定了 configkey 标签
 		configKey := field.Tag.Get(TagConfigKey)
-		defaultValue := field.Tag.Get(TagDefault)
+		// 使用 Lookup 检查 default 标签是否存在（区分"标签不存在"和"标签存在但为空"）
+		defaultValue, hasDefault := field.Tag.Lookup(TagDefault)
 
 		// 如果是嵌套结构体，递归处理
 		if field.Type.Kind() == reflect.Struct {
@@ -297,8 +297,8 @@ func parseStruct(ptr any, prefix string) {
 		fieldConfigKeyMap[fieldPath] = configKey
 		mapMutex.Unlock()
 
-		// 设置默认值
-		if defaultValue != "" {
+		// 设置默认值（如果标签存在，无论值是否为空都写入）
+		if hasDefault {
 			val := Get(configKey)
 			if val == nil || val == "" {
 				instance.Set(configKey, defaultValue)
