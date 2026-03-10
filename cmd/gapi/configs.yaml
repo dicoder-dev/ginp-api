@@ -20,25 +20,11 @@ email:
         host: smtp.126.com
         port: 465
         pwd: "12345"
-mysql:
-    dbname: z_test
-    ip: 127.0.0.1
-    port: "3306"
-    pwd: 123456
-    user: root
 server:
     port: "8083"
-sqlite:
-    db_path: data.db
 system:
-    app:
-        name: dianji
     app_name: dianji
-    db:
-        type: mysql
     user_center_url: http://localhost:8082
-    usercenter:
-        url: http://localhost:8082
 tencent:
     cos:
         allow_prefix: ""
@@ -48,5 +34,3 @@ tencent:
         region: ""
         secret_id: ""
         secret_key: ""
-tencent_cos:
-    duration: "0"
