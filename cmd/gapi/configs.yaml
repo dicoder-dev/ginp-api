@@ -1,0 +1,41 @@
+server:
+  port: "8082"
+
+db:
+  use_type: "mysql"
+  mysql:
+    ip: "127.0.0.1"
+    port: "3306"
+    user: "root"
+    pwd: "123456"
+    db: "test_db"
+  sqlite:
+    db_path: "data.db"
+  pgsql:
+    ip: "127.0.0.1"
+    port: "5432"
+    user: "root"
+    pwd: "123456"
+    db: "test_db"
+
+email:
+  client:
+    account: "dicoder@126.com"
+    pwd: "12345"
+    port: 465
+    host: "smtp.126.com"
+
+tencent:
+  cos:
+    secret_id: ""
+    secret_key: ""
+    bucket_name: ""
+    bucket_appid: ""
+    region: ""
+    duration: 0
+    allow_prefix: ""
+
+system:
+  app_name: "dianji"
+  usercenter:
+    url: "http://localhost:8082"
