@@ -33,4 +33,5 @@ tencent:
         duration: 0
         region: ""
         secret_id: ""
-        secret_key: ""
+tencent_cos:
+    duration: "0"

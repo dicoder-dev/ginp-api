@@ -93,6 +93,69 @@ func setDefaultWithoutWrite(k string, v any) {
 	}
 }
 
+// InitDefaults 将配置结构体的默认值写入配置文件
+// 如果配置文件中没有值，则写入 default tag 指定的默认值
+func InitDefaults(ptr any) error {
+	checkInstance()
+	return initDefaultsStruct(ptr, "")
+}
+
+// initDefaultsStruct 递归将默认值写入配置文件
+func initDefaultsStruct(ptr any, prefix string) error {
+	v := reflect.ValueOf(ptr)
+	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("ptr must be a pointer to a struct")
+	}
+
+	structVal := v.Elem()
+	structType := structVal.Type()
+
+	// 获取结构体名称
+	structName := structType.Name()
+	if prefix == "" {
+		prefix = toLowerSnakeCase(structName)
+	} else {
+		prefix = prefix + "." + toLowerSnakeCase(structName)
+	}
+
+	for i := 0; i < structType.NumField(); i++ {
+		field := structType.Field(i)
+		fieldVal := structVal.Field(i)
+
+		// 如果是嵌套结构体，递归处理
+		if field.Type.Kind() == reflect.Struct {
+			err := initDefaultsStruct(fieldVal.Addr().Interface(), prefix)
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		// 获取配置键
+		configKey := field.Tag.Get(TagConfigKey)
+		if configKey == "" {
+			configKey = prefix + "." + toLowerSnakeCase(field.Name)
+		}
+
+		// 获取默认值
+		defaultValue := field.Tag.Get(TagDefault)
+		if defaultValue == "" {
+			continue
+		}
+
+		// 如果配置文件中没有值，则写入默认值
+		val := Get(configKey)
+		if val == nil || val == "" {
+			err := instance.Set(configKey, defaultValue)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func Get(k string) any {
 	checkInstance()
 	val, err := instance.Get(k)
@@ -238,7 +301,7 @@ func parseStruct(ptr any, prefix string) {
 		if defaultValue != "" {
 			val := Get(configKey)
 			if val == nil || val == "" {
-				setDefaultWithoutWrite(configKey, defaultValue)
+				instance.Set(configKey, defaultValue)
 			}
 		}
 
