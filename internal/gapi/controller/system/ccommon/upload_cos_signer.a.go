@@ -77,16 +77,16 @@ func UploadCosSigner(c *ginp.ContextPlus) {
 
 func init() {
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiUploadCosSigner,                    //api路径
-		Handlers:       ginp.RegisterHandler(UploadCosSigner), //对应控制器
-		HttpType:       ginp.HttpPost,                         //http请求类型
-		NeedLogin:      false,                                 //是否需要登录
-		NeedPermission: false,                                 //是否需要鉴权
-		PermissionName: "common.upload_cos_pre",               //完整的权限名称,会跟权限表匹配
+		Path:           ApiUploadCosSigner,                //api路径
+		Handler:        ginp.BindHandler(UploadCosSigner), //对应控制器
+		HttpType:       ginp.HttpPost,                     //http请求类型
+		NeedLogin:      false,                             //是否需要登录
+		NeedPermission: false,                             //是否需要鉴权
+		PermissionName: "common.upload_cos_pre",           //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "upload_cos_pre",
-			Description: "获取 COS 直传所需参数",
-			RequestDto:  RequestUploadCosSigner{},
+			Title:         "upload_cos_pre",
+			Description:   "获取 COS 直传所需参数",
+			RequestParams: RequestUploadCosSigner{},
 		},
 	})
 }

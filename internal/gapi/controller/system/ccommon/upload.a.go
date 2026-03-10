@@ -15,12 +15,12 @@ const ApiCommonUpload = "/api/common/upload" //这是一个测试接口连通性
 
 func init() {
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiCommonUpload,              //api路径
-		Handlers:       ginp.RegisterHandler(Upload), //对应控制器
-		HttpType:       ginp.HttpPost,                //http请求类型
-		NeedLogin:      true,                         //是否需要登录
-		NeedPermission: true,                         //是否需要鉴权
-		PermissionName: "Common.upload",              //完整的权限名称,会跟权限表匹配
+		Path:           ApiCommonUpload,          //api路径
+		Handler:        ginp.BindHandler(Upload), //对应控制器
+		HttpType:       ginp.HttpPost,            //http请求类型
+		NeedLogin:      true,                     //是否需要登录
+		NeedPermission: true,                     //是否需要鉴权
+		PermissionName: "Common.upload",          //完整的权限名称,会跟权限表匹配
 	})
 }
 

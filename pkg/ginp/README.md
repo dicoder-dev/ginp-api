@@ -96,7 +96,7 @@ func init() {
         OperationType: ginp.OpCreate,  // 标记操作类型
         Swagger: &ginp.SwaggerInfo{
             Title:      "创建用户",
-            RequestDto: entity.User{},
+            RequestParams: entity.User{},
         },
     })
 }
@@ -449,7 +449,7 @@ ginp.RouterAppend(ginp.RouterItem{
     Swagger: &ginp.SwaggerInfo{
         Title:      "创建用户",
         Description: "创建新用户",
-        RequestDto: entity.User{},
+        RequestParams: entity.User{},
     },
 })
 ```

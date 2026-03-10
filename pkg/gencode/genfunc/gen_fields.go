@@ -7,23 +7,10 @@ import (
 	"reflect"
 )
 
-// 注意：此功能依赖于 ginp-api/internal/gapi/setting 包
-// 该包包含 EntityGenerationList，需要在业务项目中实现
-// 如果不需要此功能，可以注释掉以下代码
-
-// EntityGenerationList 是一个可选的实体列表
-// 在业务项目中实现此变量即可使用 GenFields 功能
-var EntityGenerationList []any
-
 // GenFields 生成实体字段常量
-// 使用方法：在业务项目的 setting 包中定义 EntityGenerationList 变量
-func GenFields() {
-	if len(EntityGenerationList) == 0 {
-		fmt.Println("警告：EntityGenerationList 为空，请先在 setting 包中定义")
-		return
-	}
-
-	for _, entity_ := range EntityGenerationList {
+// entityList: 需要生成字段常量的实体列表，例如：[]any{new(entity.User), new(entity.DemoTable)}
+func GenFields(entityList []any) {
+	for _, entity_ := range entityList {
 		t := reflect.TypeOf(entity_).Elem()
 		// fileName := strings.ToLower(t.Name()) + ".go"
 		packageName := "m" + gen.NameToAllSmall(t.Name())

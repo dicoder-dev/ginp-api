@@ -53,16 +53,16 @@ type RespondRegisterByEmail struct {
 
 func init() {
 	ginp.RouterAppend(ginp.RouterItem{
-		Path:           ApiRegisterByEmail,                    //api路径
-		Handlers:       ginp.RegisterHandler(RegisterByEmail), //对应控制器
-		HttpType:       ginp.HttpPost,                         //http请求类型
-		NeedLogin:      false,                                 //是否需要登录
-		NeedPermission: false,                                 //是否需要鉴权
-		PermissionName: "user.register_by_email",              //完整的权限名称,会跟权限表匹配
+		Path:           ApiRegisterByEmail,                //api路径
+		Handler:        ginp.BindHandler(RegisterByEmail), //对应控制器
+		HttpType:       ginp.HttpPost,                     //http请求类型
+		NeedLogin:      false,                             //是否需要登录
+		NeedPermission: false,                             //是否需要鉴权
+		PermissionName: "user.register_by_email",          //完整的权限名称,会跟权限表匹配
 		Swagger: &ginp.SwaggerInfo{
-			Title:       "register_by_email",
-			Description: "",
-			RequestDto:  RequestRegisterByEmail{},
+			Title:         "register_by_email",
+			Description:   "",
+			RequestParams: RequestRegisterByEmail{},
 		},
 	})
 }
