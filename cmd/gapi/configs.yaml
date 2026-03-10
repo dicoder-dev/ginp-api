@@ -33,8 +33,10 @@ sqlite:
 system:
     app:
         name: dianji
+    app_name: dianji
     db:
         type: mysql
+    user_center_url: http://localhost:8082
     usercenter:
         url: http://localhost:8082
 tencent:
@@ -46,3 +48,5 @@ tencent:
         region: ""
         secret_id: ""
         secret_key: ""
+tencent_cos:
+    duration: "0"
