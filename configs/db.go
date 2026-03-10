@@ -2,6 +2,9 @@ package configs
 
 import "ginp-api/pkg/cfg"
 
+// Db 全局配置变量
+var Db = new(DbConfig)
+
 // DbConfig 数据库配置
 type DbConfig struct {
 	UseType string `default:"mysql"` // 适用的数据库类型: mysql,pgsql,sqlite
@@ -32,9 +35,6 @@ type PgsqlConfig struct {
 	Pwd  string `default:"123456"`
 	Db   string `default:""`
 }
-
-// Db 全局配置变量
-var Db = new(DbConfig)
 
 func init() {
 	cfg.ParseConfigStruct(Db)

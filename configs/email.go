@@ -2,6 +2,9 @@ package configs
 
 import "ginp-api/pkg/cfg"
 
+// Email 全局配置变量
+var Email = new(EmailConfig)
+
 // EmailConfig 邮件配置
 type EmailConfig struct {
 	Client ClientConfig
@@ -14,9 +17,6 @@ type ClientConfig struct {
 	Port    int    `default:"465"`
 	Host    string `default:"smtp.126.com"`
 }
-
-// Email 全局配置变量
-var Email = new(EmailConfig)
 
 func init() {
 	cfg.ParseConfigStruct(Email)
