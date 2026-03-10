@@ -84,6 +84,15 @@ func SetDefault(k string, v any) error {
 	return nil
 }
 
+// setDefaultWithoutWrite 设置默认值但不写入文件（用于 ParseConfigStruct）
+func setDefaultWithoutWrite(k string, v any) {
+	checkInstance()
+	val := Get(k)
+	if val == nil || val == "" {
+		instance.setWithoutWrite(k, v)
+	}
+}
+
 func Get(k string) any {
 	checkInstance()
 	val, err := instance.Get(k)
@@ -229,7 +238,7 @@ func parseStruct(ptr any, prefix string) {
 		if defaultValue != "" {
 			val := Get(configKey)
 			if val == nil || val == "" {
-				instance.Set(configKey, defaultValue)
+				setDefaultWithoutWrite(configKey, defaultValue)
 			}
 		}
 
