@@ -8,7 +8,7 @@ import (
 
 func startDB() {
 	// 根据配置文件中的 db.use_type 决定使用哪种数据库
-	dbType := configs.SystemDbType()
+	dbType := configs.Db.UseType
 
 	switch dbType {
 	case "pgsql", "postgresql":

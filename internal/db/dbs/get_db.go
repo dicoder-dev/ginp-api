@@ -18,7 +18,7 @@ const (
 var useDbType = DbTypePgsql
 
 func init() {
-	dbType := configs.SystemDbType()
+	dbType := configs.Db.UseType
 	switch dbType {
 	case "mysql":
 		useDbType = DbTypeMysql

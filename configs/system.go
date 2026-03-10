@@ -2,28 +2,15 @@ package configs
 
 import "ginp-api/pkg/cfg"
 
-const (
-	ConfigKeySystemAppName       = "system.app.name"
-	ConfigKeySystemUserCenterUrl = "system.usercenter.url"
-	
-)
+// SystemConfig 系统配置
+type SystemConfig struct {
+	AppName       string `default:"dianji"`
+	UserCenterUrl string `default:"http://localhost:8082"`
+}
 
-const (
-	defaultSystemAppName       = "dianji"
-	defaultSystemUsercenterUrl = "http://localhost:8082"
-)
+// System 全局配置变量
+var System = new(SystemConfig)
 
 func init() {
-	cfg.SetDefault(ConfigKeySystemAppName, defaultSystemAppName)
-	cfg.SetDefault(ConfigKeySystemUserCenterUrl, defaultSystemUsercenterUrl)
-	
+	cfg.ParseConfigStruct(System)
 }
-
-func SystemAppName() string {
-	return cfg.GetString(ConfigKeySystemAppName)
-}
-
-func SystemUserCenterUrl() string {
-	return cfg.GetString(ConfigKeySystemUserCenterUrl)
-}
-

@@ -22,6 +22,6 @@ func startGinServer() {
 	r.Static("/assets", "./static/assets")
 
 	router.Register(r)
-	println("start server on port: " + configs.ServerPort())
-	r.Run(":" + configs.ServerPort())
+	println("start server on port: " + configs.Server.Port)
+	r.Run(":" + configs.Server.Port)
 }

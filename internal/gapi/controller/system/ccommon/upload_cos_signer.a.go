@@ -47,14 +47,14 @@ func UploadCosSigner(c *ginp.ContextPlus, requestParams *RequestUploadCosSigner)
 	}
 
 	config := &cos.STSConfig{
-		SecretID:  configs.TencentCosSecretID(),
-		SecretKey: configs.TencentCosSecretKey(),
-		Bucket:    configs.TencentCosBucketName(),
-		Region:    configs.TencentCosRegion(),
-		AppID:     configs.TencentCosBucketAppId(),
+		SecretID:  configs.TencentCos.SecretID,
+		SecretKey: configs.TencentCos.SecretKey,
+		Bucket:    configs.TencentCos.BucketName,
+		Region:    configs.TencentCos.Region,
+		AppID:     configs.TencentCos.BucketAppID,
 		//自定义文件名
 		CustomFileName: requestParams.CustomFileName,
-		Duration:       int64(configs.TencentCosDuration()), //单位秒
+		Duration:       int64(configs.TencentCos.Duration), //单位秒
 		UserId:         userId,                              //用户ID
 		StudioId:       requestParams.StudioId,              //工作室ID，如果为0则表示为用户上传的数据
 	}

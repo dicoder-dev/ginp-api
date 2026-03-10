@@ -15,10 +15,10 @@ func initEmailClient() {
 		return
 	}
 
-	host := configs.EmailClientHost()
-	port := configs.EmailClientPort()
-	account := configs.EmailClientAccount()
-	pwd := configs.EmailClientPwd()
+	host := configs.Email.Client.Host
+	port := configs.Email.Client.Port
+	account := configs.Email.Client.Account
+	pwd := configs.Email.Client.Pwd
 
 	if host == "" || account == "" || pwd == "" {
 		fmt.Println("邮箱配置不完整，无法初始化邮件客户端")

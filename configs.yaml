@@ -1,0 +1,27 @@
+db:
+    mysql:
+        ip: 127.0.0.1
+        port: "3306"
+        pwd: "123456"
+        user: root
+    pgsql:
+        ip: 127.0.0.1
+        port: "5432"
+        pwd: "123456"
+        user: root
+    sqlite:
+        db_path: data.db
+    use_type: mysql
+email:
+    client:
+        account: dicoder@126.com
+        host: smtp.126.com
+        port: "465"
+        pwd: "12345"
+server:
+    port: "8082"
+system:
+    app_name: dianji
+    user_center_url: http://localhost:8082
+tencent_cos:
+    duration: "0"
