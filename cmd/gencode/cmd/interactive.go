@@ -448,7 +448,8 @@ func handleRemoveCrud() {
 	// 确认删除操作
 	fmt.Printf("\n确认删除以下实体的 CRUD 代码吗？(%s) [y/N]: ", strings.Join(selectedEntities, ", "))
 	confirm := readInput()
-	if strings.ToLower(confirm) != "y" && strings.ToLower(confirm) != "yes" {
+	// 按回车或输入 y/yes 确认，其他输入取消
+	if confirm != "" && strings.ToLower(confirm) != "y" && strings.ToLower(confirm) != "yes" {
 		fmt.Println("操作已取消")
 		return
 	}
