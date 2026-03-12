@@ -34,6 +34,12 @@ func readInput() string {
 	return strings.TrimSpace(input)
 }
 
+// waitForEnter 提示用户按回车继续
+func waitForEnter() {
+	fmt.Print("\n按回车键继续...")
+	readInput()
+}
+
 // ShowMainMenu 显示主菜单并处理用户选择
 func ShowMainMenu() {
 	for {
@@ -194,6 +200,7 @@ func handleAddApi() {
 
 		// 调用现有函数生成 API
 		desc.GenAddApiWithParams(apiName, finalDirPath)
+		waitForEnter()
 	} else {
 		// 没有现有目录，引导创建
 		fmt.Println("当前没有控制器目录")
@@ -222,6 +229,7 @@ func handleAddApi() {
 
 		// 调用现有函数生成 API
 		desc.GenAddApiWithParams(apiName, dirPath)
+		waitForEnter()
 	}
 }
 
@@ -298,6 +306,7 @@ func handleCreateNewEntity() {
 	// 生成 CRUD
 	entities := []string{entityName}
 	desc.GenBatchCrudWithParent(entities, parentDir)
+	waitForEnter()
 }
 
 // handleGenCrudForExisting 处理为已存在实体生成 CRUD
@@ -364,6 +373,7 @@ func handleGenCrudForExisting(existingEntities []string) {
 
 	// 生成 CRUD
 	desc.GenBatchCrudWithParent(selectedEntities, parentDir)
+	waitForEnter()
 }
 
 // handleGenFields 处理生成实体字段常量
@@ -375,6 +385,7 @@ func handleGenFields() {
 	desc.GenFields()
 
 	fmt.Println("字段常量生成完成")
+	waitForEnter()
 }
 
 // handleRemoveCrud 处理删除实体 CRUD
@@ -447,6 +458,7 @@ func handleRemoveCrud() {
 		parentDir := entityParentMap[entityName]
 		desc.RemoveBatchCrudWithParent([]string{entityName}, parentDir)
 	}
+	waitForEnter()
 }
 
 // detectEntityParentDir 检测实体文件所在的父级目录
