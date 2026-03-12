@@ -1,0 +1,296 @@
+package cmd
+
+import (
+	"bufio"
+	"fmt"
+	"ginp-api/cmd/gencode/desc"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// 创建一个共享的 reader
+var sharedReader *bufio.Reader
+
+// initSharedReader 初始化共享的 reader
+func initSharedReader() {
+	if sharedReader == nil {
+		sharedReader = bufio.NewReader(os.Stdin)
+	}
+}
+
+// readInput 读取用户输入
+func readInput() string {
+	initSharedReader()
+
+	// 刷新标准输出缓冲区，确保提示信息显示
+	os.Stdout.Sync()
+
+	input, err := sharedReader.ReadString('\n')
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(input)
+}
+
+// ShowMainMenu 显示主菜单并处理用户选择
+func ShowMainMenu() {
+	for {
+		fmt.Println("")
+		fmt.Println("=== GAPI 代码生成工具 ===")
+		fmt.Println("请选择操作：")
+		fmt.Println("1. 新增 API 接口控制器")
+		fmt.Println("2. 生成实体 CRUD 代码")
+		fmt.Println("3. 生成实体字段常量")
+		fmt.Println("4. 退出")
+		fmt.Print("请输入选项编号: ")
+
+		choice := readInput()
+
+		switch choice {
+		case "1":
+			handleAddApi()
+		case "2":
+			handleGenCrud()
+		case "3":
+			handleGenFields()
+		case "4":
+			fmt.Println("退出程序")
+			return
+		default:
+			fmt.Println("无效的选项，请重新选择")
+		}
+	}
+}
+
+// handleAddApi 处理新增 API 接口
+func handleAddApi() {
+	// 扫描控制器目录
+	controllerDirs := desc.ScanControllerDirs()
+
+	fmt.Println("")
+	fmt.Println("=== 新增 API 接口控制器 ===")
+
+	// 显示现有目录列表
+	if len(controllerDirs) > 0 {
+		fmt.Println("请选择目标目录（输入编号）：")
+		for i, dir := range controllerDirs {
+			fmt.Printf("%d. %s\n", i+1, dir)
+		}
+		fmt.Println(fmt.Sprintf("%d. [创建新目录]", len(controllerDirs)+1))
+		fmt.Print("请输入选项编号: ")
+
+		dirChoice := readInput()
+		dirChoice = strings.TrimSpace(dirChoice)
+
+		dirIndex, err := strconv.Atoi(dirChoice)
+		if err != nil || dirIndex < 1 || dirIndex > len(controllerDirs)+1 {
+			fmt.Println("无效的选项")
+			return
+		}
+
+		var dirPath string
+		if dirIndex <= len(controllerDirs) {
+			dirPath = controllerDirs[dirIndex-1]
+		} else {
+			// 创建新目录
+			fmt.Print("请输入新目录名称（如 user）: ")
+			dirPath = readInput()
+			dirPath = strings.TrimSpace(dirPath)
+			if dirPath == "" {
+				fmt.Println("目录名称不能为空")
+				return
+			}
+		}
+
+		// 获取 API 名称
+		fmt.Print("请输入 API 名称（大驼峰命名，如 GetUserInfo）: ")
+		apiName := readInput()
+		apiName = strings.TrimSpace(apiName)
+
+		if apiName == "" {
+			fmt.Println("API 名称不能为空")
+			return
+		}
+
+		// 调用现有函数生成 API
+		desc.GenAddApiWithParams(apiName, dirPath)
+	} else {
+		// 没有现有目录，引导创建
+		fmt.Println("当前没有控制器目录")
+		fmt.Print("请输入新目录名称（如 user）: ")
+
+		dirPath := readInput()
+		dirPath = strings.TrimSpace(dirPath)
+
+		if dirPath == "" {
+			fmt.Println("目录名称不能为空")
+			return
+		}
+
+		// 获取 API 名称
+		fmt.Print("请输入 API 名称（大驼峰命名，如 GetUserInfo）: ")
+		apiName := readInput()
+		apiName = strings.TrimSpace(apiName)
+
+		if apiName == "" {
+			fmt.Println("API 名称不能为空")
+			return
+		}
+
+		// 调用现有函数生成 API
+		desc.GenAddApiWithParams(apiName, dirPath)
+	}
+}
+
+// handleGenCrud 处理生成实体 CRUD
+func handleGenCrud() {
+	fmt.Println("")
+	fmt.Println("=== 生成实体 CRUD 代码 ===")
+
+	// 扫描已存在的实体
+	existingEntities := desc.ScanExistingEntities()
+
+	// 显示选项
+	fmt.Println("请选择操作：")
+	fmt.Println("1. 创建新实体并生成 CRUD")
+	if len(existingEntities) > 0 {
+		fmt.Println("2. 为已存在实体生成 CRUD")
+	}
+	fmt.Print("请输入选项编号: ")
+
+	choice := readInput()
+	choice = strings.TrimSpace(choice)
+
+	if choice == "1" || (choice == "2" && len(existingEntities) == 0) {
+		// 创建新实体
+		handleCreateNewEntity()
+	} else if choice == "2" && len(existingEntities) > 0 {
+		// 为已存在实体生成 CRUD
+		handleGenCrudForExisting(existingEntities)
+	} else {
+		fmt.Println("无效的选项")
+	}
+}
+
+// handleCreateNewEntity 处理创建新实体
+func handleCreateNewEntity() {
+	fmt.Println("")
+	fmt.Println("=== 创建新实体并生成 CRUD ===")
+
+	// 获取实体名称
+	fmt.Print("请输入实体名称（大驼峰命名，如 UserGroup）: ")
+	entityName := readInput()
+	entityName = strings.TrimSpace(entityName)
+
+	if entityName == "" {
+		fmt.Println("实体名称不能为空")
+		return
+	}
+
+	// 获取父级目录
+	controllerDirs := desc.ScanControllerDirs()
+	var parentDir string
+
+	if len(controllerDirs) > 0 {
+		fmt.Println("请选择父级目录（直接回车使用默认目录）：")
+		for i, dir := range controllerDirs {
+			fmt.Printf("%d. %s\n", i+1, dir)
+		}
+		fmt.Printf("0. 不使用父级目录\n")
+		fmt.Print("请输入选项编号: ")
+
+		dirChoice := readInput()
+		dirChoice = strings.TrimSpace(dirChoice)
+
+		if dirChoice != "" {
+			dirIndex, err := strconv.Atoi(dirChoice)
+			if err == nil && dirIndex >= 0 && dirIndex <= len(controllerDirs) {
+				if dirIndex > 0 {
+					parentDir = controllerDirs[dirIndex-1]
+				}
+			}
+		}
+	}
+
+	// 生成 CRUD
+	entities := []string{entityName}
+	desc.GenBatchCrudWithParent(entities, parentDir)
+}
+
+// handleGenCrudForExisting 处理为已存在实体生成 CRUD
+func handleGenCrudForExisting(existingEntities []string) {
+	fmt.Println("")
+	fmt.Println("=== 为已存在实体生成 CRUD ===")
+
+	// 显示已存在的实体
+	fmt.Println("已存在的实体：")
+	for i, entity := range existingEntities {
+		fmt.Printf("%d. %s\n", i+1, entity)
+	}
+	fmt.Print("请输入实体编号（多个用逗号分隔，如 1,2,3）: ")
+
+	choice := readInput()
+	choice = strings.TrimSpace(choice)
+
+	if choice == "" {
+		fmt.Println("输入不能为空")
+		return
+	}
+
+	// 解析选择
+	selectedEntities := []string{}
+	choices := strings.Split(choice, ",")
+
+	for _, c := range choices {
+		c = strings.TrimSpace(c)
+		index, err := strconv.Atoi(c)
+		if err == nil && index >= 1 && index <= len(existingEntities) {
+			selectedEntities = append(selectedEntities, existingEntities[index-1])
+		}
+	}
+
+	if len(selectedEntities) == 0 {
+		fmt.Println("未选择任何实体")
+		return
+	}
+
+	// 获取父级目录
+	controllerDirs := desc.ScanControllerDirs()
+	var parentDir string
+
+	if len(controllerDirs) > 0 {
+		fmt.Println("请选择父级目录（直接回车使用默认目录）：")
+		for i, dir := range controllerDirs {
+			fmt.Printf("%d. %s\n", i+1, dir)
+		}
+		fmt.Printf("0. 不使用父级目录\n")
+		fmt.Print("请输入选项编号: ")
+
+		dirChoice := readInput()
+		dirChoice = strings.TrimSpace(dirChoice)
+
+		if dirChoice != "" {
+			dirIndex, err := strconv.Atoi(dirChoice)
+			if err == nil && dirIndex >= 0 && dirIndex <= len(controllerDirs) {
+				if dirIndex > 0 {
+					parentDir = controllerDirs[dirIndex-1]
+				}
+			}
+		}
+	}
+
+	// 生成 CRUD
+	desc.GenBatchCrudWithParent(selectedEntities, parentDir)
+}
+
+// handleGenFields 处理生成实体字段常量
+func handleGenFields() {
+	fmt.Println("")
+	fmt.Println("=== 生成实体字段常量 ===")
+	fmt.Println("正在生成字段常量...")
+
+	desc.GenFields()
+
+	fmt.Println("字段常量生成完成")
+}
