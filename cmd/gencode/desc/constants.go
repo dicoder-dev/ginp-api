@@ -21,17 +21,20 @@ func getBaseReplaceMap(BigCameName string, parentDir ...string) map[string]strin
 	lineName := gen.NameToLine(BigCameName)
 	parentDirPrefix := ""
 	parentDirStr := ""
+	fatherFolderName := ""
 	if len(parentDir) > 0 && parentDir[0] != "" {
 		parentDirStr = parentDir[0] + "/"
 		parentDirPrefix = "/" + parentDir[0]
+		fatherFolderName = parentDir[0]
 	}
 	var replaceData map[string]string = map[string]string{
-		ReplaceEntityName:  BigCameName,
-		ReplaceLineName:    lineName,
-		ReplacePackageName: gen.NameToAllSmall(lineName),
-		"$PARENT_DIR$":    parentDirStr,
-		ReplaceEntityTitle: BigCameName,
-		ReplaceParentDirPrefix: parentDirPrefix,
+		ReplaceEntityName:        BigCameName,
+		ReplaceLineName:         lineName,
+		ReplacePackageName:       gen.NameToAllSmall(lineName),
+		"$PARENT_DIR$":          parentDirStr,
+		ReplaceEntityTitle:      BigCameName,
+		ReplaceParentDirPrefix:  parentDirPrefix,
+		"$FATHER_FOLDER_NAME$": fatherFolderName,
 	}
 
 	return replaceData

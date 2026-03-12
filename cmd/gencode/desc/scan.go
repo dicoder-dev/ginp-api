@@ -82,3 +82,38 @@ func GetAllControllerDirsWithPath() map[string]string {
 
 	return dirs
 }
+
+// ScanSubDirs 扫描指定父级目录下的子目录（以c开头的）
+// parentDir 父级目录名称（不带c前缀），如 "system"
+// 返回子目录名称列表（不带c前缀）
+func ScanSubDirs(parentDir string) []string {
+	controllerDir := GetDirController()
+	parentPath := filepath.Join(controllerDir, parentDir)
+
+	subDirs := []string{}
+
+	// 检查父级目录是否存在
+	if _, err := os.Stat(parentPath); err != nil {
+		return subDirs
+	}
+
+	// 读取父级目录下的所有子目录
+	entries, err := os.ReadDir(parentPath)
+	if err != nil {
+		return subDirs
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			dirName := entry.Name()
+			// 只获取以c开头的目录
+			if strings.HasPrefix(dirName, "c") {
+				// 去掉c前缀
+				subDirName := strings.TrimPrefix(dirName, "c")
+				subDirs = append(subDirs, subDirName)
+			}
+		}
+	}
+
+	return subDirs
+}

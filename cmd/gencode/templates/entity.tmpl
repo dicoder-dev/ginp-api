@@ -19,7 +19,8 @@ var _ typ.IEntity = (*$ENTITY_NAME$)(nil) // U实体必须实现接口GenConfig
 
 func ($ENTITY_NAME$) GenConfig() *gen.EntityConfig {
 	return &gen.EntityConfig{
-		TableName: tableName$ENTITY_NAME$,
+		TableName:       tableName$ENTITY_NAME$,
+		FatherFolderName: "$FATHER_FOLDER_NAME$",
 	}
 }
 
