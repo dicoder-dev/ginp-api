@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"ginp-api/cmd/gencode/desc"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -343,31 +344,61 @@ func handleRemoveCrud() {
 		return
 	}
 
-	// 获取父级目录
-	controllerDirs := desc.ScanControllerDirs()
-	var parentDir string
-
-	if len(controllerDirs) > 0 {
-		fmt.Println("请选择父级目录：")
-		for i, dir := range controllerDirs {
-			fmt.Printf("%d. %s\n", i+1, dir)
-		}
-		fmt.Printf("0. 不使用父级目录\n")
-		fmt.Print("请输入选项编号: ")
-
-		dirChoice := readInput()
-		dirChoice = strings.TrimSpace(dirChoice)
-
-		if dirChoice != "" {
-			dirIndex, err := strconv.Atoi(dirChoice)
-			if err == nil && dirIndex >= 0 && dirIndex <= len(controllerDirs) {
-				if dirIndex > 0 {
-					parentDir = controllerDirs[dirIndex-1]
-				}
-			}
+	// 自动检测每个实体的正确父级目录
+	entityParentMap := make(map[string]string) // entityName -> parentDir
+	for _, entityName := range selectedEntities {
+		parentDir := detectEntityParentDir(entityName)
+		entityParentMap[entityName] = parentDir
+		if parentDir != "" {
+			fmt.Printf("实体 %s 位于父级目录: %s\n", entityName, parentDir)
+		} else {
+			fmt.Printf("实体 %s 无父级目录\n", entityName)
 		}
 	}
 
-	// 删除 CRUD
-	desc.RemoveBatchCrudWithParent(selectedEntities, parentDir)
+	// 确认删除操作
+	fmt.Printf("\n确认删除以下实体的 CRUD 代码吗？(%s) [y/N]: ", strings.Join(selectedEntities, ", "))
+	confirm := readInput()
+	if strings.ToLower(confirm) != "y" && strings.ToLower(confirm) != "yes" {
+		fmt.Println("操作已取消")
+		return
+	}
+
+	// 删除每个实体
+	for _, entityName := range selectedEntities {
+		parentDir := entityParentMap[entityName]
+		desc.RemoveBatchCrudWithParent([]string{entityName}, parentDir)
+	}
+}
+
+// detectEntityParentDir 检测实体文件所在的父级目录
+func detectEntityParentDir(entityName string) string {
+	lineName := strings.ToLower(entityName)
+	if len(lineName) > 0 {
+		lineName = strings.ToLower(string(lineName[0])) + lineName[1:]
+	}
+	lineName = strings.ReplaceAll(lineName, "_", "")
+
+	// 检查 controller 目录下的所有子目录
+	controllerBase := desc.GetDirController()
+	entries, _ := os.ReadDir(controllerBase)
+
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		// 检查这个目录下是否有 c + lineName 的子目录
+		entityDir := filepath.Join(controllerBase, entry.Name(), "c"+lineName)
+		if _, err := os.Stat(entityDir); err == nil {
+			return entry.Name()
+		}
+	}
+
+	// 检查顶层是否有 c + lineName 目录（无父级目录的情况）
+	topLevelDir := filepath.Join(controllerBase, "c"+lineName)
+	if _, err := os.Stat(topLevelDir); err == nil {
+		return ""
+	}
+
+	return ""
 }
