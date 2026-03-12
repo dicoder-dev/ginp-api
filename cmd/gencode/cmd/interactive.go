@@ -463,6 +463,26 @@ func handleRemoveCrud() {
 
 // detectEntityParentDir 检测实体文件所在的父级目录
 func detectEntityParentDir(entityName string) string {
+	// 首先尝试从实体配置中获取 FatherFolderName
+	fatherFolderName := getEntityFatherFolderName(entityName)
+	if fatherFolderName != "" {
+		// 使用 FatherFolderName + c + 实体名（小写首字母）构建路径
+		lineName := strings.ToLower(entityName)
+		if len(lineName) > 0 {
+			lineName = strings.ToLower(string(lineName[0])) + lineName[1:]
+		}
+		lineName = strings.ReplaceAll(lineName, "_", "")
+
+		// 构建完整路径: FatherFolderName/cUserTest
+		controllerBase := desc.GetDirController()
+		entityDir := filepath.Join(controllerBase, fatherFolderName, "c"+lineName)
+
+		if _, err := os.Stat(entityDir); err == nil {
+			return fatherFolderName
+		}
+	}
+
+	// 如果没有获取到 FatherFolderName，使用原来的检测逻辑
 	lineName := strings.ToLower(entityName)
 	if len(lineName) > 0 {
 		lineName = strings.ToLower(string(lineName[0])) + lineName[1:]
@@ -491,4 +511,49 @@ func detectEntityParentDir(entityName string) string {
 	}
 
 	return ""
+}
+
+// getEntityFatherFolderName 从实体文件中获取 FatherFolderName 配置
+func getEntityFatherFolderName(entityName string) string {
+	// 获取实体文件路径
+	entityDir := desc.GetDirEntidy()
+	lineName := strings.ToLower(entityName)
+	if len(lineName) > 0 {
+		lineName = strings.ToLower(string(lineName[0])) + lineName[1:]
+	}
+	lineName = strings.ReplaceAll(lineName, "_", "")
+	entityFilePath := filepath.Join(entityDir, lineName+".e.go")
+
+	// 读取实体文件内容
+	content, err := os.ReadFile(entityFilePath)
+	if err != nil {
+		return ""
+	}
+
+	// 查找 FatherFolderName 配置
+	// 匹配模式: FatherFolderName: "xxx"
+	fileContent := string(content)
+	prefix := "FatherFolderName:"
+	startIdx := strings.Index(fileContent, prefix)
+	if startIdx == -1 {
+		return ""
+	}
+
+	// 从匹配位置开始查找引号
+	contentAfterPrefix := fileContent[startIdx+len(prefix):]
+	// 跳过空格
+	contentAfterPrefix = strings.TrimLeft(contentAfterPrefix, " \t")
+	// 查找引号
+	if !strings.HasPrefix(contentAfterPrefix, "\"") {
+		return ""
+	}
+
+	// 提取引号内的内容
+	endIdx := strings.Index(contentAfterPrefix[1:], "\"")
+	if endIdx == -1 {
+		return ""
+	}
+
+	fatherFolderName := contentAfterPrefix[1 : endIdx+1]
+	return fatherFolderName
 }
