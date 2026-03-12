@@ -57,31 +57,47 @@ func GenBatchCrudWithParent(entities []string, parentDir string) {
 			oPathEntity := PathEntity(lineName)
 			gen.ReplaceAndWriteTemplate(tPathEntity, oPathEntity, replaceData)
 
-			// 2. 生成router文件
-			tPathRouter := TemplatePathRouter()
-			oPathRouter := PathRouter(lineName, parentDir)
-			gen.ReplaceAndWriteTemplate(tPathRouter, oPathRouter, replaceData)
-			AddImportRouterPackage(lineName, parentDir) // 添加router导入包
-
-			// 3. 生成controller文件
-			tPathController := TemplatePathController()
-			oPathController := PathController(lineName, parentDir)
-			gen.ReplaceAndWriteTemplate(tPathController, oPathController, replaceData)
-
-			// 4. 生成service文件
+			// 2. 生成service文件
 			tPathService := TemplatePathService()
 			oPathService := PathService(lineName, parentDir)
 			gen.ReplaceAndWriteTemplate(tPathService, oPathService, replaceData)
 
-			// 5. 生成model文件
+			// 3. 生成model文件
 			tPathRepository := TemplatePathModel()
 			oPathRepository := PathModel(lineName, parentDir)
 			gen.ReplaceAndWriteTemplate(tPathRepository, oPathRepository, replaceData)
 
-			// 6. 生成fields文件
+			// 4. 生成fields文件
 			tPathFields := TemplatePathFields()
 			oPathFields := PathFields(lineName, parentDir)
 			gen.ReplaceAndWriteTemplate(tPathFields, oPathFields, replaceData)
+
+			// 5. 生成controller文件 - 每个接口一个文件
+			// 5.1 生成 create.a.go
+			tPathCreate := TemplatePathCrudCreate()
+			oPathCreate := PathControllerCreate(lineName, parentDir)
+			gen.ReplaceAndWriteTemplate(tPathCreate, oPathCreate, replaceData)
+			AddImportRouterPackage(lineName, parentDir) // 添加router导入包
+
+			// 5.2 生成 find_by_id.a.go
+			tPathFindById := TemplatePathCrudFindById()
+			oPathFindById := PathControllerFindById(lineName, parentDir)
+			gen.ReplaceAndWriteTemplate(tPathFindById, oPathFindById, replaceData)
+
+			// 5.3 生成 update.a.go
+			tPathUpdate := TemplatePathCrudUpdate()
+			oPathUpdate := PathControllerUpdate(lineName, parentDir)
+			gen.ReplaceAndWriteTemplate(tPathUpdate, oPathUpdate, replaceData)
+
+			// 5.4 生成 delete.a.go
+			tPathDelete := TemplatePathCrudDelete()
+			oPathDelete := PathControllerDelete(lineName, parentDir)
+			gen.ReplaceAndWriteTemplate(tPathDelete, oPathDelete, replaceData)
+
+			// 5.5 生成 search.a.go
+			tPathSearch := TemplatePathCrudSearch()
+			oPathSearch := PathControllerSearch(lineName, parentDir)
+			gen.ReplaceAndWriteTemplate(tPathSearch, oPathSearch, replaceData)
 
 			// 添加到成功列表
 			successEntities = append(successEntities, entityNameBig)

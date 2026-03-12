@@ -27,7 +27,7 @@ func GetDirProject() string {
 
 func GetDirAPP() string {
 	projetDir := GetDirProject()
-	return filepath.Join(projetDir, "internal", "app", "gapi")
+	return filepath.Join(projetDir, "internal", "gapi")
 }
 func GetDirGencode() string {
 	projetDir := GetDirProject()

@@ -67,6 +67,56 @@ func PathEntity(lineName string) string {
 	return filepath.Join(GetDirEntidy(), lineName+".e.go")
 }
 
+// 组装 controller create 路径
+func PathControllerCreate(lineName string, parentDir ...string) string {
+	lineName = gen.NameToLine(lineName)
+	allSmallName := gen.NameToAllSmall(lineName)
+	if len(parentDir) > 0 && parentDir[0] != "" {
+		return filepath.Join(GetDirController(), parentDir[0], "c"+allSmallName, "create.a.go")
+	}
+	return filepath.Join(GetDirController(), "c"+allSmallName, "create.a.go")
+}
+
+// 组装 controller find_by_id 路径
+func PathControllerFindById(lineName string, parentDir ...string) string {
+	lineName = gen.NameToLine(lineName)
+	allSmallName := gen.NameToAllSmall(lineName)
+	if len(parentDir) > 0 && parentDir[0] != "" {
+		return filepath.Join(GetDirController(), parentDir[0], "c"+allSmallName, "find_by_id.a.go")
+	}
+	return filepath.Join(GetDirController(), "c"+allSmallName, "find_by_id.a.go")
+}
+
+// 组装 controller update 路径
+func PathControllerUpdate(lineName string, parentDir ...string) string {
+	lineName = gen.NameToLine(lineName)
+	allSmallName := gen.NameToAllSmall(lineName)
+	if len(parentDir) > 0 && parentDir[0] != "" {
+		return filepath.Join(GetDirController(), parentDir[0], "c"+allSmallName, "update.a.go")
+	}
+	return filepath.Join(GetDirController(), "c"+allSmallName, "update.a.go")
+}
+
+// 组装 controller delete 路径
+func PathControllerDelete(lineName string, parentDir ...string) string {
+	lineName = gen.NameToLine(lineName)
+	allSmallName := gen.NameToAllSmall(lineName)
+	if len(parentDir) > 0 && parentDir[0] != "" {
+		return filepath.Join(GetDirController(), parentDir[0], "c"+allSmallName, "delete.a.go")
+	}
+	return filepath.Join(GetDirController(), "c"+allSmallName, "delete.a.go")
+}
+
+// 组装 controller search 路径
+func PathControllerSearch(lineName string, parentDir ...string) string {
+	lineName = gen.NameToLine(lineName)
+	allSmallName := gen.NameToAllSmall(lineName)
+	if len(parentDir) > 0 && parentDir[0] != "" {
+		return filepath.Join(GetDirController(), parentDir[0], "c"+allSmallName, "search.a.go")
+	}
+	return filepath.Join(GetDirController(), "c"+allSmallName, "search.a.go")
+}
+
 // // 组装 api 路径
 // func PathAddApi(apiDir string, apiNameLine string) string {
 // 	entityLineName = gen.NameToLine(entityLineName)

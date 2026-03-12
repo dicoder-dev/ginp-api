@@ -11,22 +11,29 @@ const (
 	ReplaceApiNameLine      = "$API_NAME_LINE$"
 	PlaceholderRouterImport = "//{{placeholder_router_import}}//"
 	RouterReplaceStr        = `_ "ginp-api/internal/gapi/controller/`
+	ReplaceEntityTitle      = "$ENTITY_TITLE$"
+	ReplaceParentDirPrefix  = "$PARENT_DIR_PREFIX$"
 )
 
 // 基础替换数据 传入大驼峰如 $ENTITY_NAME$Group
 func getBaseReplaceMap(BigCameName string, parentDir ...string) map[string]string {
 	BigCameName = gen.NameToCameBig(BigCameName)
 	lineName := gen.NameToLine(BigCameName)
+	parentDirPrefix := ""
+	parentDirStr := ""
+	if len(parentDir) > 0 && parentDir[0] != "" {
+		parentDirStr = parentDir[0] + "/"
+		parentDirPrefix = "/" + parentDir[0]
+	}
 	var replaceData map[string]string = map[string]string{
 		ReplaceEntityName:  BigCameName,
 		ReplaceLineName:    lineName,
 		ReplacePackageName: gen.NameToAllSmall(lineName),
-		"$PARENT_DIR$":     "",
+		"$PARENT_DIR$":    parentDirStr,
+		ReplaceEntityTitle: BigCameName,
+		ReplaceParentDirPrefix: parentDirPrefix,
 	}
 
-	if len(parentDir) > 0 && parentDir[0] != "" {
-		replaceData["$PARENT_DIR$"] = parentDir[0] + "/"
-	}
 	return replaceData
 }
 

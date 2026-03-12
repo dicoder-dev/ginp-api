@@ -1,13 +1,11 @@
 db:
     mysql:
-        db: ""
         dbname: ""
         ip: 127.0.0.1
         port: "3306"
         pwd: "123456"
         user: root
     pgsql:
-        db: ""
         dbname: ""
         ip: 127.0.0.1
         port: "5432"
@@ -15,40 +13,27 @@ db:
         user: root
     sqlite:
         db_path: data.db
-    use_type: mysql
 email:
     client:
         account: dicoder@126.com
         host: smtp.126.com
         port: 465
         pwd: "12345"
-mysql:
-    dbname: ""
-    ip: 127.0.0.1
-    port: "3306"
-    pwd: "123456"
-    user: root
 server:
     port: "8082"
-sqlite:
-    db_path: data.db
 system:
     app:
         name: dianji
-    app_name: dianji
     db:
         type: mysql
-    user_center_url: http://localhost:8082
     usercenter:
         url: http://localhost:8082
 tencent:
     cos:
         allow_prefix: ""
-        bucket_app_i_d: ""
         bucket_appid: ""
         bucket_name: ""
         duration: 0
         region: ""
-        secret_i_d: ""
         secret_id: ""
         secret_key: ""

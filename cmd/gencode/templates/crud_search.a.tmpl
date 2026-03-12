@@ -34,7 +34,7 @@ func Search(ctx *ginp.ContextPlus, requestParams *comdto.ReqSearch) error {
 		return err
 	}
 	//也可以自己创建并传入读写db: tables.New$ENTITY_NAME$(wdb,rdb)
-	list, total, err := s$PACKAGE_NAME$.Model().FindListWithRelations(requestParams.Wheres, requestParams.Extra, requestParams.Relations)
+	list, total, err := s$PACKAGE_NAME$.Model().FindList(requestParams.Wheres, requestParams.Extra)
 	if err != nil {
 		return err
 	}
@@ -42,8 +42,8 @@ func Search(ctx *ginp.ContextPlus, requestParams *comdto.ReqSearch) error {
 	resp := &comdto.RespSearch{
 		List:     list,
 		Total:    uint(total),
-		PageNum:  uint(params.Extra.PageNum),
-		PageSize: uint(params.Extra.PageSize),
+		PageNum:  uint(requestParams.Extra.PageNum),
+		PageSize: uint(requestParams.Extra.PageSize),
 	}
 	ctx.SuccessData(resp)
 	return nil

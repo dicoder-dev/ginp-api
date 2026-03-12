@@ -36,3 +36,28 @@ func TemplatePathFields() string {
 func TemplatePathAddApi() string {
 	return filepath.Join(GetDirTemplate(), "addapi.tmpl")
 }
+
+// 模板路径 CRUD create
+func TemplatePathCrudCreate() string {
+	return filepath.Join(GetDirTemplate(), "crud_create.a.tmpl")
+}
+
+// 模板路径 CRUD find_by_id
+func TemplatePathCrudFindById() string {
+	return filepath.Join(GetDirTemplate(), "crud_find_by_id.a.tmpl")
+}
+
+// 模板路径 CRUD update
+func TemplatePathCrudUpdate() string {
+	return filepath.Join(GetDirTemplate(), "crud_update.a.tmpl")
+}
+
+// 模板路径 CRUD delete
+func TemplatePathCrudDelete() string {
+	return filepath.Join(GetDirTemplate(), "crud_delete.a.tmpl")
+}
+
+// 模板路径 CRUD search
+func TemplatePathCrudSearch() string {
+	return filepath.Join(GetDirTemplate(), "crud_search.a.tmpl")
+}

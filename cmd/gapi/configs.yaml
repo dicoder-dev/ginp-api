@@ -25,8 +25,14 @@ email:
 server:
     port: "8083"
 system:
+    app:
+        name: dianji
     app_name: dianji
+    db:
+        type: mysql
     user_center_url: http://localhost:8082
+    usercenter:
+        url: http://localhost:8082
 tencent:
     cos:
         allow_prefix: ""
