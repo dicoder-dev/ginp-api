@@ -34,30 +34,6 @@ go run cmd/gencode/main.go
 go run cmd/gapi/main.go
 ```
 
-### 4. Use API
-```bash
-# Create user
-curl -X POST http://localhost:8080/api/user/create \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"123456","email":"admin@test.com"}'
-
-# Query user
-curl http://localhost:8080/api/user/find_by_id?id=1
-
-# Search users
-curl "http://localhost:8080/api/user/search?page=1&page_size=10"
-
-# Update user
-curl -X PUT http://localhost:8080/api/user/update \
-  -H "Content-Type: application/json" \
-  -d '{"id":1,"username":"admin2"}'
-
-# Delete user
-curl -X DELETE http://localhost:8080/api/user/delete \
-  -H "Content-Type: application/json" \
-  -d '{"ids":[1]}'
-```
-
 ---
 
 ## Complete API Example File

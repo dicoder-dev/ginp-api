@@ -34,30 +34,6 @@ go run cmd/gencode/main.go
 go run cmd/gapi/main.go
 ```
 
-### 4. 调用接口
-```bash
-# 创建用户
-curl -X POST http://localhost:8080/api/user/create \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"123456","email":"admin@test.com"}'
-
-# 查询用户
-curl http://localhost:8080/api/user/find_by_id?id=1
-
-# 搜索用户列表
-curl "http://localhost:8080/api/user/search?page=1&page_size=10"
-
-# 更新用户
-curl -X PUT http://localhost:8080/api/user/update \
-  -H "Content-Type: application/json" \
-  -d '{"id":1,"username":"admin2"}'
-
-# 删除用户
-curl -X DELETE http://localhost:8080/api/user/delete \
-  -H "Content-Type: application/json" \
-  -d '{"ids":[1]}'
-```
-
 ---
 
 ## 完整接口示例文件
