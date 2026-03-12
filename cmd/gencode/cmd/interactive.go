@@ -42,7 +42,8 @@ func ShowMainMenu() {
 		fmt.Println("1. 新增 API 接口控制器")
 		fmt.Println("2. 生成实体 CRUD 代码")
 		fmt.Println("3. 生成实体字段常量")
-		fmt.Println("4. 退出")
+		fmt.Println("4. 删除实体 CRUD 代码")
+		fmt.Println("5. 退出")
 		fmt.Print("请输入选项编号: ")
 
 		choice := readInput()
@@ -55,6 +56,8 @@ func ShowMainMenu() {
 		case "3":
 			handleGenFields()
 		case "4":
+			handleRemoveCrud()
+		case "5":
 			fmt.Println("退出程序")
 			return
 		default:
@@ -293,4 +296,78 @@ func handleGenFields() {
 	desc.GenFields()
 
 	fmt.Println("字段常量生成完成")
+}
+
+// handleRemoveCrud 处理删除实体 CRUD
+func handleRemoveCrud() {
+	fmt.Println("")
+	fmt.Println("=== 删除实体 CRUD 代码 ===")
+
+	// 扫描已存在的实体
+	existingEntities := desc.ScanExistingEntities()
+
+	if len(existingEntities) == 0 {
+		fmt.Println("当前没有已存在的实体")
+		return
+	}
+
+	// 显示已存在的实体
+	fmt.Println("已存在的实体：")
+	for i, entity := range existingEntities {
+		fmt.Printf("%d. %s\n", i+1, entity)
+	}
+	fmt.Print("请输入实体编号（多个用逗号分隔，如 1,2,3）: ")
+
+	choice := readInput()
+	choice = strings.TrimSpace(choice)
+
+	if choice == "" {
+		fmt.Println("输入不能为空")
+		return
+	}
+
+	// 解析选择
+	selectedEntities := []string{}
+	choices := strings.Split(choice, ",")
+
+	for _, c := range choices {
+		c = strings.TrimSpace(c)
+		index, err := strconv.Atoi(c)
+		if err == nil && index >= 1 && index <= len(existingEntities) {
+			selectedEntities = append(selectedEntities, existingEntities[index-1])
+		}
+	}
+
+	if len(selectedEntities) == 0 {
+		fmt.Println("未选择任何实体")
+		return
+	}
+
+	// 获取父级目录
+	controllerDirs := desc.ScanControllerDirs()
+	var parentDir string
+
+	if len(controllerDirs) > 0 {
+		fmt.Println("请选择父级目录：")
+		for i, dir := range controllerDirs {
+			fmt.Printf("%d. %s\n", i+1, dir)
+		}
+		fmt.Printf("0. 不使用父级目录\n")
+		fmt.Print("请输入选项编号: ")
+
+		dirChoice := readInput()
+		dirChoice = strings.TrimSpace(dirChoice)
+
+		if dirChoice != "" {
+			dirIndex, err := strconv.Atoi(dirChoice)
+			if err == nil && dirIndex >= 0 && dirIndex <= len(controllerDirs) {
+				if dirIndex > 0 {
+					parentDir = controllerDirs[dirIndex-1]
+				}
+			}
+		}
+	}
+
+	// 删除 CRUD
+	desc.RemoveBatchCrudWithParent(selectedEntities, parentDir)
 }
