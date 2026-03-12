@@ -1,121 +1,10 @@
 # Ginp-API
 
-A powerful RESTful API project based on Go + Gin framework with built-in code generation tools.
+A powerful RESTful API project based by Go + Gin framework with built-in code generation tools.
 
-## Features
+## Quick Start (5 minutes)
 
-### 🚀 Ginp Framework Extension
-Enhanced Gin framework with convenient APIs:
-
-**ContextPlus - Handy Response Methods:**
-```go
-// Success response
-c.Success()
-
-// Success with data
-c.SuccessData(&User{ID: 1, Name: "John"})
-
-// Fail response
-c.Fail("Invalid parameter")
-
-// Fail with data
-c.FailData(err.Error(), map[string]any{"field": "username"})
-```
-
-**Auto Parameter Binding:**
-```go
-// Define request struct
-type CreateUserRequest struct {
-    Username string `json:"username" binding:"required"`
-    Password string `json:"password" binding:"required"`
-    Email    string `json:"email"`
-}
-
-// Controller - params auto-bound!
-func CreateUser(c *ginp.ContextPlus, params *CreateUserRequest) error {
-    user, err := service.CreateUser(params.Username, params.Password)
-    if err != nil {
-        return err  // Auto returns fail response
-    }
-    return nil  // Auto returns success response
-}
-
-// Register route
-ginp.RouterAppend(ginp.RouterItem{
-    Path:    "/api/user/create",
-    Handler: ginp.BindParamsHandler(CreateUser, CreateUserRequest{}),
-    HttpType: ginp.HttpPost,
-})
-```
-
-**Route Management with Aliases:**
-```go
-ginp.RouterAppend(ginp.RouterItem{
-    Path:        "/api/user/info",
-    AliasePaths: []string{"/api/user/profile", "/api/u/info"},
-    Handler:     ginp.BindParamsHandler(GetUserInfo, Request{}),
-    HttpType:    ginp.HttpGet,
-})
-```
-
-### 🔧 Code Generation Tool
-Automated CRUD code generation with interactive menu:
-
-```bash
-go run cmd/gencode/main.go
-
-=== GAPI Code Generator ===
-1. Generate Entity CRUD Code      # Auto generate Controller/Service/Model
-2. Add New API Controller         # Add custom API to existing module
-3. Generate Field Constants      # Scan entities, generate FieldXXX constants
-4. Delete Entity CRUD Code        # Remove all CRUD files for entity
-```
-
-### 📦 Where Query Builder
-Elegant chain-style query condition builder:
-
-```go
-// Simple condition
-wheres := where.New("id", "=", 1).Conditions()
-
-// Chain with AND
-wheres := where.New("status", "=", 1).
-    And("username", "=", "admin").
-    And("email", "LIKE", "%@example.com").
-    Conditions()
-
-// Chain with OR
-wheres := where.New("status", "=", 1).
-    Or("status", "=", 2).
-    Conditions()
-
-// With operators
-wheres := where.New("age", ">", 18).
-    And("score", ">=", 60).
-    And("status", "IN", []int{1,2,3}).
-    Conditions()
-```
-
-### 🗄️ Multi-Database Support
-```go
-// MySQL
-db.InitMySQL()
-
-// PostgreSQL
-db.InitPgSQL()
-
-// SQLite
-db.InitSqlite()
-```
-
-### 📁 Layered Architecture
-```
-Controller → Service → Model → Entity
-```
-
-## Quick Start
-
-### 1. Create Entity
+### 1. Define Entity
 ```go
 // internal/gapi/entity/user.e.go
 package entity
@@ -125,62 +14,210 @@ type User struct {
     Username  string
     Password  string
     Email     string
+    Status    int
 }
 
-func (User) TableName() string {
-    return "sys_user"
-}
-
+func (User) TableName() string { return "sys_user" }
 func (User) GenConfig() *gen.EntityConfig {
-    return &gen.EntityConfig{
-        TableName: "sys_user",
-    }
+    return &gen.EntityConfig{TableName: "sys_user"}
 }
 ```
 
-### 2. Generate Code
+### 2. Generate CRUD Code
 ```bash
 go run cmd/gencode/main.go
-# Select option 1, enter entity name "user"
+# Select: 1 → Enter: user
 ```
 
-### 3. Implement Business Logic
-Edit generated controller files in `internal/gapi/controller/`
-
-### 4. Run Server
+### 3. Run
 ```bash
 go run cmd/gapi/main.go
 ```
 
-## Project Structure
+### 4. Use API
+```bash
+# Create user
+curl -X POST http://localhost:8080/api/user/create \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"123456","email":"admin@test.com"}'
 
+# Query user
+curl http://localhost:8080/api/user/find_by_id?id=1
+
+# Search users
+curl "http://localhost:8080/api/user/search?page=1&page_size=10"
+
+# Update user
+curl -X PUT http://localhost:8080/api/user/update \
+  -H "Content-Type: application/json" \
+  -d '{"id":1,"username":"admin2"}'
+
+# Delete user
+curl -X DELETE http://localhost:8080/api/user/delete \
+  -H "Content-Type: application/json" \
+  -d '{"ids":[1]}'
 ```
-ginp-api/
-├── cmd/
-│   ├── gapi/           # Main application
-│   └── gencode/        # Code generation tool
-├── internal/gapi/
-│   ├── controller/     # HTTP handlers (.a.go)
-│   ├── service/        # Business logic (.s.go)
-│   ├── model/          # Database operations (.m.go)
-│   ├── entity/         # Data models (.e.go)
-│   └── router/        # Route config
-├── pkg/
-│   ├── ginp/           # Framework extension
-│   ├── where/          # Query builder
-│   ├── dbops/          # DB operations
-│   └── utils/          # Utilities
-└── configs/            # Configuration files
+
+---
+
+## Complete API Example File
+
+Generate this file with code tool:
+```
+internal/gapi/controller/user/cuser/sys_user_create.a.go
 ```
 
-## Configuration
+```go
+package cuser
 
-Edit `configs/config.yaml`:
+import (
+    "ginp-api/internal/gapi/service/user/suser"
+    "ginp-api/pkg/ginp"
+)
+
+// Request structure - auto bound from JSON
+type RequestSysUserCreate struct {
+    Username string `json:"username" binding:"required"`
+    Password string `json:"password" binding:"required"`
+    Email    string `json:"email"`
+    Status   int    `json:"status"`
+}
+
+// Response structure
+type RespondSysUserCreate struct {
+    ID       uint   `json:"id"`
+    Username string `json:"username"`
+}
+
+// Controller handler - params auto-bound!
+func SysUserCreate(c *ginp.ContextPlus, params *RequestSysUserCreate) error {
+    id, err := suser.Create(params.Username, params.Password, params.Email, params.Status)
+    if err != nil {
+        return err  // Auto returns: {"code": 0, "msg": "error message"}
+    }
+    // Auto returns: {"code": 1, "msg": "success", "data": {...}}
+    return c.SuccessData(RespondSysUserCreate{
+        ID:       id,
+        Username: params.Username,
+    })
+}
+
+// Route registration (auto called via init)
+func init() {
+    ginp.RouterAppend(ginp.RouterItem{
+        Path:        "/api/user/create",
+        Handler:     ginp.BindParamsHandler(SysUserCreate, RequestSysUserCreate{}),
+        HttpType:    ginp.HttpPost,
+        NeedLogin:   false,
+        Swagger: &ginp.SwaggerInfo{
+            Title:         "Create User",
+            Description:   "Create a new user account",
+            RequestParams: RequestSysUserCreate{},
+        },
+    })
+}
+```
+
+---
+
+## Features
+
+### 🚀 Ginp Framework Extension
+
+**Auto Parameter Binding:**
+```go
+// Define struct with binding tags
+type Request struct {
+    Name string `json:"name" binding:"required"`
+    Age  int    `json:"age"`
+}
+
+// Handler receives typed params - no manual binding needed!
+func Handler(c *ginp.ContextPlus, params *Request) error {
+    // params already bound from request body
+    return c.SuccessData(params)
+}
+
+// Register with one line
+ginp.RouterAppend(ginp.RouterItem{
+    Path:    "/api/test",
+    Handler: ginp.BindParamsHandler(Handler, Request{}),
+    HttpType: ginp.HttpPost,
+})
+```
+
+**Handy Response Methods:**
+```go
+c.Success()                                    // {"code": 1, "msg": "success"}
+c.SuccessData(user)                           // {"code": 1, "msg": "success", "data": {...}}
+c.Fail("error")                                // {"code": 0, "msg": "error"}
+c.FailData("error", map[string]any{"key": 1}) // {"code": 0, "msg": "error", "data": {...}}
+```
+
+**Route with Aliases:**
+```go
+ginp.RouterAppend(ginp.RouterItem{
+    Path:        "/api/user/info",
+    AliasePaths: []string{"/api/user/profile", "/api/u/info"},
+    // ...
+})
+```
+
+### 🔧 Code Generation Tool
+```bash
+go run cmd/gencode/main.go
+
+=== GAPI Code Generator ===
+1. Generate Entity CRUD Code      # Auto create all layers
+2. Add New API Controller        # Add custom API
+3. Generate Field Constants     # Scan & generate FieldXXX
+4. Delete Entity CRUD Code      # Remove entity files
+```
+
+### 📦 Where Query Builder
+```go
+// Chain query
+wheres := where.New("status", "=", 1).
+    And("username", "LIKE", "%admin%").
+    Or("email", "=", "admin@test.com").
+    Conditions()
+
+// Use in model
+users, err := model.Where(wheres).Limit(10).Find()
+```
+
+### ⚙️ Zero Config (Defaults Work Out of Box)
+
+Just declare struct, no config files needed:
+```go
+// internal/gapi/start/setting.go
+func LoadConfig() {
+    // Default values already set!
+    // Server: :8080
+    // Database: sqlite ./data.db
+    // Just override if needed:
+    // ginp.SetSuccessCode(1)
+    // ginp.SetFailCode(0)
+}
+```
+
+Want to change? Override in code:
+```go
+func init() {
+    ginp.SetSuccessCode(200)      // Custom success code
+    ginp.SetFailCode(400)         // Custom fail code
+    ginp.SetSuccessMsg("OK")      // Custom success message
+    ginp.SetNoLoginCode(401)      // Custom no-login code
+}
+```
+
+Or use config file:
 ```yaml
+# configs/config.yaml
 server:
   port: 8080
-
 database:
+  type: mysql
   mysql:
     host: localhost
     port: 3306
@@ -189,22 +226,50 @@ database:
     dbname: ginp_api
 ```
 
+### 🗄️ Multi-Database
+```go
+db.InitMySQL()    // MySQL
+db.InitPgSQL()    // PostgreSQL
+db.InitSqlite()   // SQLite (default)
+```
+
+---
+
+## Project Structure
+
+```
+ginp-api/
+├── cmd/
+│   ├── gapi/            # Main: go run cmd/gapi/main.go
+│   └── gencode/        # Generator: go run cmd/gencode/main.go
+├── internal/gapi/
+│   ├── controller/     # .a.go files - HTTP handlers
+│   ├── service/        # .s.go files - business logic
+│   ├── model/          # .m.go files - DB operations
+│   ├── entity/         # .e.go files - data models
+│   └── router/         # route registration
+├── pkg/
+│   ├── ginp/           # framework extension
+│   ├── where/          # query builder
+│   └── utils/          # utilities
+└── configs/            # optional config files
+```
+
 ## API Response Format
 
+| Code | Msg | Description |
+|------|-----|-------------|
+| 1 | success | Success |
+| 0 | fail message | Business error |
+| 401 | unauthorized | Not logged in |
+
 ```json
-{
-  "code": 1,
-  "msg": "success",
-  "data": {...}
-}
+{"code": 1, "msg": "success", "data": {...}}
+{"code": 0, "msg": "username already exists", "data": null}
 ```
 
 ## Tech Stack
 
-- **Web Framework**: Gin
+- **Web**: Gin
 - **ORM**: GORM
-- **Database**: MySQL / PostgreSQL / SQLite
-
-## License
-
-MIT
+- **DB**: MySQL / PostgreSQL / SQLite

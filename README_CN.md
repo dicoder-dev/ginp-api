@@ -1,186 +1,223 @@
 # Ginp-API
 
-基于 Go + Gin 框架开发的 RESTful API 项目，内置强大的代码生成工具。
+基于 Go + Gin 框架开发的 RESTful API 项目，内置强大的代码生成工具，开箱即用。
 
-## 核心特性
+## 快速开始 (5 分钟)
 
-### 🚀 Ginp 框架扩展
-对 Gin 框架进行增强封装，提供便捷的 API：
-
-**ContextPlus - 便捷的响应方法：**
-```go
-// 成功响应
-c.Success()
-
-// 带数据的成功响应
-c.SuccessData(&User{ID: 1, Name: "张三"})
-
-// 失败响应
-c.Fail("参数错误")
-
-// 带数据的失败响应
-c.FailData(err.Error(), map[string]any{"field": "username"})
-```
-
-**自动参数绑定：**
-```go
-// 定义请求结构体
-type CreateUserRequest struct {
-    Username string `json:"username" binding:"required"`
-    Password string `json:"password" binding:"required"`
-    Email    string `json:"email"`
-}
-
-// 控制器 - 参数自动绑定！
-func CreateUser(c *ginp.ContextPlus, params *CreateUserRequest) error {
-    user, err := service.CreateUser(params.Username, params.Password)
-    if err != nil {
-        return err  // 自动返回失败响应
-    }
-    return nil  // 自动返回成功响应
-}
-
-// 注册路由
-ginp.RouterAppend(ginp.RouterItem{
-    Path:     "/api/user/create",
-    Handler:  ginp.BindParamsHandler(CreateUser, CreateUserRequest{}),
-    HttpType: ginp.HttpPost,
-})
-```
-
-**路由管理支持别名：**
-```go
-ginp.RouterAppend(ginp.RouterItem{
-    Path:        "/api/user/info",
-    AliasePaths: []string{"/api/user/profile", "/api/u/info"},
-    Handler:     ginp.BindParamsHandler(GetUserInfo, Request{}),
-    HttpType:    ginp.HttpGet,
-})
-```
-
-### 🔧 代码生成工具
-交互式菜单，自动化生成 CRUD 代码：
-
-```bash
-go run cmd/gencode/main.go
-
-=== GAPI 代码生成工具 ===
-1. 生成实体 CRUD 代码          # 自动生成 Controller/Service/Model
-2. 新增 API 接口控制器         # 在已有模块中添加自定义 API
-3. 生成实体字段常量            # 扫描实体，生成 FieldXXX 常量
-4. 删除实体 CRUD 代码          # 删除实体的所有 CRUD 文件
-```
-
-### 📦 Where 查询构建器
-优雅的链式调用查询条件构建器：
-
-```go
-// 简单条件
-wheres := where.New("id", "=", 1).Conditions()
-
-// 链式 AND
-wheres := where.New("status", "=", 1).
-    And("username", "=", "admin").
-    And("email", "LIKE", "%@example.com").
-    Conditions()
-
-// 链式 OR
-wheres := where.New("status", "=", 1).
-    Or("status", "=", 2).
-    Conditions()
-
-// 支持多种操作符
-wheres := where.New("age", ">", 18).
-    And("score", ">=", 60).
-    And("status", "IN", []int{1,2,3}).
-    Conditions()
-```
-
-### 🗄️ 多数据库支持
-```go
-// MySQL
-db.InitMySQL()
-
-// PostgreSQL
-db.InitPgSQL()
-
-// SQLite
-db.InitSqlite()
-```
-
-### 📁 分层架构
-```
-Controller → Service → Model → Entity
-```
-
-## 快速开始
-
-### 1. 创建实体
+### 1. 定义实体
 ```go
 // internal/gapi/entity/user.e.go
 package entity
 
 type User struct {
-    ID        uint
-    Username  string
-    Password  string
-    Email     string
+    ID       uint
+    Username string
+    Password string
+    Email    string
+    Status   int
 }
 
-func (User) TableName() string {
-    return "sys_user"
-}
-
+func (User) TableName() string { return "sys_user" }
 func (User) GenConfig() *gen.EntityConfig {
-    return &gen.EntityConfig{
-        TableName: "sys_user",
-    }
+    return &gen.EntityConfig{TableName: "sys_user"}
 }
 ```
 
-### 2. 生成代码
+### 2. 生成CRUD代码
 ```bash
 go run cmd/gencode/main.go
-# 选择选项 1，输入实体名称 "user"
+# 选择: 1 → 输入: user
 ```
 
-### 3. 实现业务逻辑
-在 `internal/gapi/controller/` 目录下修改生成的控制器文件
-
-### 4. 启动服务
+### 3. 启动
 ```bash
 go run cmd/gapi/main.go
 ```
 
-## 项目结构
+### 4. 调用接口
+```bash
+# 创建用户
+curl -X POST http://localhost:8080/api/user/create \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"123456","email":"admin@test.com"}'
 
+# 查询用户
+curl http://localhost:8080/api/user/find_by_id?id=1
+
+# 搜索用户列表
+curl "http://localhost:8080/api/user/search?page=1&page_size=10"
+
+# 更新用户
+curl -X PUT http://localhost:8080/api/user/update \
+  -H "Content-Type: application/json" \
+  -d '{"id":1,"username":"admin2"}'
+
+# 删除用户
+curl -X DELETE http://localhost:8080/api/user/delete \
+  -H "Content-Type: application/json" \
+  -d '{"ids":[1]}'
 ```
-ginp-api/
-├── cmd/
-│   ├── gapi/           # 主应用程序
-│   └── gencode/        # 代码生成工具
-├── internal/gapi/
-│   ├── controller/    # HTTP 处理器 (.a.go)
-│   ├── service/       # 业务逻辑 (.s.go)
-│   ├── model/         # 数据库操作 (.m.go)
-│   ├── entity/        # 数据模型 (.e.go)
-│   └── router/        # 路由配置
-├── pkg/
-│   ├── ginp/          # 框架扩展
-│   ├── where/         # 查询构建器
-│   ├── dbops/         # 数据库操作
-│   └── utils/         # 工具函数
-└── configs/           # 配置文件
+
+---
+
+## 完整接口示例文件
+
+使用代码生成工具生成的文件：
+```
+internal/gapi/controller/user/cuser/sys_user_create.a.go
 ```
 
-## 配置
+```go
+package cuser
 
-编辑 `configs/config.yaml`:
+import (
+    "ginp-api/internal/gapi/service/user/suser"
+    "ginp-api/pkg/ginp"
+)
+
+// 请求结构体 - 自动从 JSON 绑定
+type RequestSysUserCreate struct {
+    Username string `json:"username" binding:"required"`
+    Password string `json:"password" binding:"required"`
+    Email    string `json:"email"`
+    Status   int    `json:"status"`
+}
+
+// 响应结构体
+type RespondSysUserCreate struct {
+    ID       uint   `json:"id"`
+    Username string `json:"username"`
+}
+
+// 控制器处理函数 - 参数自动绑定！
+func SysUserCreate(c *ginp.ContextPlus, params *RequestSysUserCreate) error {
+    id, err := suser.Create(params.Username, params.Password, params.Email, params.Status)
+    if err != nil {
+        return err  // 自动返回: {"code": 0, "msg": "错误信息"}
+    }
+    // 自动返回: {"code": 1, "msg": "success", "data": {...}}
+    return c.SuccessData(RespondSysUserCreate{
+        ID:       id,
+        Username: params.Username,
+    })
+}
+
+// 路由注册 (通过 init 自动调用)
+func init() {
+    ginp.RouterAppend(ginp.RouterItem{
+        Path:     "/api/user/create",
+        Handler:  ginp.BindParamsHandler(SysUserCreate, RequestSysUserCreate{}),
+        HttpType: ginp.HttpPost,
+        NeedLogin: false,
+        Swagger: &ginp.SwaggerInfo{
+            Title:         "创建用户",
+            Description:   "创建新用户账号",
+            RequestParams: RequestSysUserCreate{},
+        },
+    })
+}
+```
+
+---
+
+## 核心特性
+
+### 🚀 Ginp 框架扩展
+
+**自动参数绑定：**
+```go
+// 定义结构体，添加 binding 标签
+type Request struct {
+    Name string `json:"name" binding:"required"`
+    Age  int    `json:"age"`
+}
+
+// 处理器直接接收绑定好的参数，无需手动解析！
+func Handler(c *ginp.ContextPlus, params *Request) error {
+    // params 已经自动从请求体绑定完成
+    return c.SuccessData(params)
+}
+
+// 一行代码注册路由
+ginp.RouterAppend(ginp.RouterItem{
+    Path:    "/api/test",
+    Handler: ginp.BindParamsHandler(Handler, Request{}),
+    HttpType: ginp.HttpPost,
+})
+```
+
+**便捷的响应方法：**
+```go
+c.Success()                                    // {"code": 1, "msg": "success"}
+c.SuccessData(user)                           // {"code": 1, "msg": "success", "data": {...}}
+c.Fail("错误信息")                              // {"code": 0, "msg": "错误信息"}
+c.FailData("错误信息", map[string]any{"key": 1}) // {"code": 0, "msg": "错误信息", "data": {...}}
+```
+
+**路由别名支持：**
+```go
+ginp.RouterAppend(ginp.RouterItem{
+    Path:        "/api/user/info",
+    AliasePaths: []string{"/api/user/profile", "/api/u/info"},
+    // ...
+})
+```
+
+### 🔧 代码生成工具
+```bash
+go run cmd/gencode/main.go
+
+=== GAPI 代码生成工具 ===
+1. 生成实体 CRUD 代码          # 自动创建所有层级代码
+2. 新增 API 接口控制器        # 添加自定义 API
+3. 生成实体字段常量           # 扫描实体生成 FieldXXX
+4. 删除实体 CRUD 代码         # 删除实体的所有文件
+```
+
+### 📦 Where 查询构建器
+```go
+// 链式查询
+wheres := where.New("status", "=", 1).
+    And("username", "LIKE", "%admin%").
+    Or("email", "=", "admin@test.com").
+    Conditions()
+
+// 在 Model 中使用
+users, err := model.Where(wheres).Limit(10).Find()
+```
+
+### ⚙️ 零配置 (开箱即用)
+
+只需声明结构体，无需配置文件：
+```go
+// internal/gapi/start/setting.go
+func LoadConfig() {
+    // 默认值已配置好！
+    // 服务端口: :8080
+    // 数据库: sqlite ./data.db
+    // 如需修改，只需覆盖：
+    // ginp.SetSuccessCode(1)
+    // ginp.SetFailCode(0)
+}
+```
+
+代码中覆盖配置：
+```go
+func init() {
+    ginp.SetSuccessCode(200)      // 自定义成功码
+    ginp.SetFailCode(400)         // 自定义失败码
+    ginp.SetSuccessMsg("OK")      // 自定义成功消息
+    ginp.SetNoLoginCode(401)      // 自定义未登录码
+}
+```
+
+或使用配置文件：
 ```yaml
+# configs/config.yaml
 server:
   port: 8080
-
 database:
+  type: mysql
   mysql:
     host: localhost
     port: 3306
@@ -189,14 +226,46 @@ database:
     dbname: ginp_api
 ```
 
+### 🗄️ 多数据库支持
+```go
+db.InitMySQL()    // MySQL
+db.InitPgSQL()    // PostgreSQL
+db.InitSqlite()   // SQLite (默认)
+```
+
+---
+
+## 项目结构
+
+```
+ginp-api/
+├── cmd/
+│   ├── gapi/            # 主程序: go run cmd/gapi/main.go
+│   └── gencode/         # 代码生成: go run cmd/gencode/main.go
+├── internal/gapi/
+│   ├── controller/     # .a.go 文件 - HTTP 处理器
+│   ├── service/        # .s.go 文件 - 业务逻辑
+│   ├── model/          # .m.go 文件 - 数据库操作
+│   ├── entity/         # .e.go 文件 - 数据模型
+│   └── router/         # 路由注册
+├── pkg/
+│   ├── ginp/           # 框架扩展
+│   ├── where/          # 查询构建器
+│   └── utils/          # 工具函数
+└── configs/            # 可选配置文件
+```
+
 ## API 响应格式
 
+| Code | Msg | 说明 |
+|------|-----|------|
+| 1 | success | 成功 |
+| 0 | 错误信息 | 业务错误 |
+| 401 | unauthorized | 未登录 |
+
 ```json
-{
-  "code": 1,
-  "msg": "success",
-  "data": {...}
-}
+{"code": 1, "msg": "success", "data": {...}}
+{"code": 0, "msg": "用户名已存在", "data": null}
 ```
 
 ## 技术栈
@@ -204,7 +273,3 @@ database:
 - **Web 框架**: Gin
 - **ORM**: GORM
 - **数据库**: MySQL / PostgreSQL / SQLite
-
-## 许可证
-
-MIT
