@@ -34,6 +34,22 @@ func readInput() string {
 	return strings.TrimSpace(input)
 }
 
+// readChoiceWithDefault 读取用户选择，回车默认选择第一个选项
+// 返回选择的索引（从0开始）
+func readChoiceWithDefault(maxChoice int) int {
+	input := readInput()
+	if input == "" {
+		// 回车默认选择第一个
+		return 0
+	}
+	choice, err := strconv.Atoi(input)
+	if err != nil || choice < 1 || choice > maxChoice {
+		// 无效输入返回 -1
+		return -1
+	}
+	return choice - 1
+}
+
 // waitForEnter 提示用户按回车继续
 func waitForEnter() {
 	fmt.Print("\n按回车键继续...")
@@ -51,20 +67,20 @@ func ShowMainMenu() {
 		fmt.Println("3. 生成实体字段常量")
 		fmt.Println("4. 删除实体 CRUD 代码")
 		fmt.Println("5. 退出")
-		fmt.Print("请输入选项编号: ")
+		fmt.Print("请输入选项编号（直接回车默认选择 1）: ")
 
-		choice := readInput()
+		choice := readChoiceWithDefault(5)
 
 		switch choice {
-		case "1":
+		case 0:
 			handleGenCrud()
-		case "2":
+		case 1:
 			handleAddApi()
-		case "3":
+		case 2:
 			handleGenFields()
-		case "4":
+		case 3:
 			handleRemoveCrud()
-		case "5":
+		case 4:
 			fmt.Println("退出程序")
 			return
 		default:
@@ -83,25 +99,23 @@ func handleAddApi() {
 
 	// 显示现有目录列表
 	if len(controllerDirs) > 0 {
-		fmt.Println("请选择目标目录（输入编号）：")
+		fmt.Println("请选择目标目录（输入编号，直接回车默认选择 1）：")
 		for i, dir := range controllerDirs {
 			fmt.Printf("%d. %s\n", i+1, dir)
 		}
 		fmt.Println(fmt.Sprintf("%d. [创建新目录]", len(controllerDirs)+1))
 		fmt.Print("请输入选项编号: ")
 
-		dirChoice := readInput()
-		dirChoice = strings.TrimSpace(dirChoice)
+		dirChoice := readChoiceWithDefault(len(controllerDirs) + 1)
 
-		dirIndex, err := strconv.Atoi(dirChoice)
-		if err != nil || dirIndex < 1 || dirIndex > len(controllerDirs)+1 {
+		if dirChoice == -1 {
 			fmt.Println("无效的选项")
 			return
 		}
 
 		var parentDir string
-		if dirIndex <= len(controllerDirs) {
-			parentDir = controllerDirs[dirIndex-1]
+		if dirChoice < len(controllerDirs) {
+			parentDir = controllerDirs[dirChoice]
 		} else {
 			// 创建新目录
 			fmt.Print("请输入新目录名称（如 user）: ")
@@ -119,25 +133,23 @@ func handleAddApi() {
 
 		if len(subDirs) > 0 {
 			// 有子目录，让用户选择
-			fmt.Println("请选择子目录（输入编号）：")
+			fmt.Println("请选择子目录（输入编号，直接回车默认选择 1）：")
 			for i, dir := range subDirs {
 				fmt.Printf("%d. %s\n", i+1, dir)
 			}
 			fmt.Println(fmt.Sprintf("%d. [在父级目录下新建]", len(subDirs)+1))
 			fmt.Print("请输入选项编号: ")
 
-			subDirChoice := readInput()
-			subDirChoice = strings.TrimSpace(subDirChoice)
+			subDirChoice := readChoiceWithDefault(len(subDirs) + 1)
 
-			subDirIndex, err := strconv.Atoi(subDirChoice)
-			if err != nil || subDirIndex < 1 || subDirIndex > len(subDirs)+1 {
+			if subDirChoice == -1 {
 				fmt.Println("无效的选项")
 				return
 			}
 
-			if subDirIndex <= len(subDirs) {
+			if subDirChoice < len(subDirs) {
 				// 选择已有子目录
-				finalDirPath = parentDir + "/c" + subDirs[subDirIndex-1]
+				finalDirPath = parentDir + "/c" + subDirs[subDirChoice]
 			} else {
 				// 在父级目录下新建（新建的文件夹必须以c开头）
 				fmt.Print("请输入新子目录名称（如 user）: ")
@@ -152,17 +164,25 @@ func handleAddApi() {
 		} else {
 			// 没有子目录，直接在父级目录下新建（新建的文件夹必须以c开头）
 			// 如果用户选择了已有目录，也需要添加到c开头的目录下
-			fmt.Println("请选择存放位置（输入编号）：")
+			maxLocation := 1
+			if dirChoice < len(controllerDirs) {
+				maxLocation = 2
+			}
+			fmt.Println("请选择存放位置（输入编号，直接回车默认选择 1）：")
 			fmt.Println("1. 在父级目录下新建")
-			if dirIndex <= len(controllerDirs) {
+			if dirChoice < len(controllerDirs) {
 				fmt.Println("2. 存放到已有的 c" + parentDir + " 目录（如果存在）")
 			}
 			fmt.Print("请输入选项编号: ")
 
-			locationChoice := readInput()
-			locationChoice = strings.TrimSpace(locationChoice)
+			locationChoice := readChoiceWithDefault(maxLocation)
 
-			if locationChoice == "2" && dirIndex <= len(controllerDirs) {
+			if locationChoice == -1 {
+				fmt.Println("无效的选项")
+				return
+			}
+
+			if locationChoice == 1 && dirChoice < len(controllerDirs) {
 				// 存放到已有的 c + parentDir 目录
 				// 先检查该目录是否存在
 				existingDir := "c" + parentDir
@@ -242,20 +262,23 @@ func handleGenCrud() {
 	existingEntities := desc.ScanExistingEntities()
 
 	// 显示选项
-	fmt.Println("请选择操作：")
+	fmt.Println("请选择操作（直接回车默认选择 1）：")
 	fmt.Println("1. 创建新实体并生成 CRUD")
 	if len(existingEntities) > 0 {
 		fmt.Println("2. 为已存在实体生成 CRUD")
 	}
 	fmt.Print("请输入选项编号: ")
 
-	choice := readInput()
-	choice = strings.TrimSpace(choice)
+	maxChoice := 1
+	if len(existingEntities) > 0 {
+		maxChoice = 2
+	}
+	choice := readChoiceWithDefault(maxChoice)
 
-	if choice == "1" || (choice == "2" && len(existingEntities) == 0) {
+	if choice == 0 || (choice == 1 && len(existingEntities) == 0) {
 		// 创建新实体
 		handleCreateNewEntity()
-	} else if choice == "2" && len(existingEntities) > 0 {
+	} else if choice == 1 && len(existingEntities) > 0 {
 		// 为已存在实体生成 CRUD
 		handleGenCrudForExisting(existingEntities)
 	} else {
@@ -283,23 +306,25 @@ func handleCreateNewEntity() {
 	var parentDir string
 
 	if len(controllerDirs) > 0 {
-		fmt.Println("请选择父级目录（直接回车使用默认目录）：")
+		fmt.Println("请选择父级目录（直接回车默认选择 0 不使用父级目录）：")
 		for i, dir := range controllerDirs {
 			fmt.Printf("%d. %s\n", i+1, dir)
 		}
 		fmt.Printf("0. 不使用父级目录\n")
 		fmt.Print("请输入选项编号: ")
 
-		dirChoice := readInput()
-		dirChoice = strings.TrimSpace(dirChoice)
+		// 选项范围是 0 到 len(controllerDirs)
+		maxChoice := len(controllerDirs)
+		dirChoice := readChoiceWithDefault(maxChoice)
 
-		if dirChoice != "" {
-			dirIndex, err := strconv.Atoi(dirChoice)
-			if err == nil && dirIndex >= 0 && dirIndex <= len(controllerDirs) {
-				if dirIndex > 0 {
-					parentDir = controllerDirs[dirIndex-1]
-				}
-			}
+		if dirChoice == -1 {
+			fmt.Println("无效的选项")
+			return
+		}
+
+		// dirChoice 是从 0 开始的索引，所以 dirChoice > 0 表示选择了某个父级目录
+		if dirChoice > 0 {
+			parentDir = controllerDirs[dirChoice-1]
 		}
 	}
 
@@ -351,23 +376,25 @@ func handleGenCrudForExisting(existingEntities []string) {
 	var parentDir string
 
 	if len(controllerDirs) > 0 {
-		fmt.Println("请选择父级目录（直接回车使用默认目录）：")
+		fmt.Println("请选择父级目录（直接回车默认选择 0 不使用父级目录）：")
 		for i, dir := range controllerDirs {
 			fmt.Printf("%d. %s\n", i+1, dir)
 		}
 		fmt.Printf("0. 不使用父级目录\n")
 		fmt.Print("请输入选项编号: ")
 
-		dirChoice := readInput()
-		dirChoice = strings.TrimSpace(dirChoice)
+		// 选项范围是 0 到 len(controllerDirs)
+		maxChoice := len(controllerDirs)
+		dirChoice := readChoiceWithDefault(maxChoice)
 
-		if dirChoice != "" {
-			dirIndex, err := strconv.Atoi(dirChoice)
-			if err == nil && dirIndex >= 0 && dirIndex <= len(controllerDirs) {
-				if dirIndex > 0 {
-					parentDir = controllerDirs[dirIndex-1]
-				}
-			}
+		if dirChoice == -1 {
+			fmt.Println("无效的选项")
+			return
+		}
+
+		// dirChoice 是从 0 开始的索引，所以 dirChoice > 0 表示选择了某个父级目录
+		if dirChoice > 0 {
+			parentDir = controllerDirs[dirChoice-1]
 		}
 	}
 
