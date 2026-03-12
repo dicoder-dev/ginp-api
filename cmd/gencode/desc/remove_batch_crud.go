@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ginp-api/internal/gen"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -65,10 +66,10 @@ func RemoveBatchCrudWithParent(entities []string, parentDir string) {
 				deletedCount++
 			}
 
-			// 3. 删除controller文件
-			oPathController := PathController(lineName, parentDir)
-			if removeFileIfExists(oPathController) {
-				deletedCount++
+			// 3. 删除controller目录下的所有.a.go文件（CRUD生成的文件）
+			controllerDir := getControllerDir(lineName, parentDir)
+			if controllerDir != "" {
+				deletedCount += removeControllerFiles(controllerDir)
 			}
 
 			// 4. 删除service文件
@@ -107,6 +108,44 @@ func RemoveBatchCrudWithParent(entities []string, parentDir string) {
 	if len(failedEntities) > 0 {
 		fmt.Printf("失败: %d 个实体 (%s)\n", len(failedEntities), strings.Join(failedEntities, ", "))
 	}
+}
+
+// getControllerDir 获取控制器目录路径
+func getControllerDir(lineName string, parentDir string) string {
+	allSmallName := gen.NameToAllSmall(lineName)
+	if parentDir != "" {
+		return filepath.Join(GetDirController(), parentDir, "c"+allSmallName)
+	}
+	return filepath.Join(GetDirController(), "c"+allSmallName)
+}
+
+// removeControllerFiles 删除控制器目录下的所有.a.go文件
+func removeControllerFiles(controllerDir string) int {
+	deletedCount := 0
+
+	// 检查目录是否存在
+	if _, err := os.Stat(controllerDir); os.IsNotExist(err) {
+		return 0
+	}
+
+	// 读取目录下的所有文件
+	entries, err := os.ReadDir(controllerDir)
+	if err != nil {
+		return 0
+	}
+
+	// 删除所有.a.go文件
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".a.go") {
+			filePath := filepath.Join(controllerDir, entry.Name())
+			if err := os.Remove(filePath); err == nil {
+				fmt.Printf("已删除文件: %s\n", filePath)
+				deletedCount++
+			}
+		}
+	}
+
+	return deletedCount
 }
 
 // RemoveBatchCrudInteractive 交互式批量删除多个实体的CRUD代码
