@@ -58,8 +58,26 @@ func BindParamsHandler(handler interface{}, paramTypes ...interface{}) gin.Handl
 		
 		// 绑定每个参数类型
 		for i, paramType := range paramTypes {
+			// 如果参数类型为 nil，跳过（表示该 handler 不需要参数）
+			if paramType == nil {
+				continue
+			}
+
 			// 创建参数实例
-			paramInstance := reflect.New(reflect.TypeOf(paramType).Elem()).Interface()
+			// 支持指针类型（&entity.User{}）和值类型（entity.User{}）
+			var paramInstance interface{}
+			paramTypeVal := reflect.TypeOf(paramType)
+			if paramTypeVal == nil {
+				// 参数类型为 nil，跳过
+				continue
+			}
+			if paramTypeVal.Kind() == reflect.Ptr {
+				// 指针类型：&entity.User{}
+				paramInstance = reflect.New(paramTypeVal.Elem()).Interface()
+			} else {
+				// 值类型：entity.User{}
+				paramInstance = reflect.New(paramTypeVal).Interface()
+			}
 			
 			// 绑定参数
 			var err error
