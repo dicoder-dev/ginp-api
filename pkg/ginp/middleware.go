@@ -7,8 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ANSI 颜色代码
+const (
+	ColorRed    = "\033[31m"
+	ColorGreen  = "\033[32m"
+	ColorYellow = "\033[33m"
+	ColorReset  = "\033[0m"
+)
+
 // LoggingMiddleware 请求日志中间件
 // 记录每个请求的方法、路径、状态码和耗时
+// 非200状态码使用红色字体打印
 func LoggingMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startTime := time.Now()
@@ -24,13 +33,26 @@ func LoggingMiddleware() gin.HandlerFunc {
 		duration := time.Since(startTime)
 
 		if showLog {
-			log.Printf("[%s] %s %s | Status: %d | Duration: %v",
-				clientIP,
-				method,
-				path,
-				statusCode,
-				duration,
-			)
+			// 非200状态码使用红色字体打印
+			if statusCode >= 400 {
+				log.Printf("%s[%s] %s %s | Status: %d | Duration: %v%s",
+					ColorRed,
+					clientIP,
+					method,
+					path,
+					statusCode,
+					duration,
+					ColorReset,
+				)
+			} else {
+				log.Printf("[%s] %s %s | Status: %d | Duration: %v",
+					clientIP,
+					method,
+					path,
+					statusCode,
+					duration,
+				)
+			}
 		}
 	}
 }

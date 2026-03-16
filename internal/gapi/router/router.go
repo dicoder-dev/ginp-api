@@ -10,7 +10,10 @@ func Register(r *gin.Engine) {
 
 	//1.------------中间件---------------
 	//跨域设置
-	r.Use(CORSMiddleware())
+	r.Use(ginp.CORSMiddleware())
+
+	//请求日志记录
+	r.Use(ginp.LoggingMiddleware())
 
 	//登录鉴权检验
 	// r.Use(ginp.RegisterHandler(AuthorizationCheck))
