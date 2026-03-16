@@ -215,18 +215,19 @@ const (
 )
 
 // ToLowerSnakeCase 将驼峰字符串转为小写下划线
-// 例如: EmailConfig -> email, ClientPwd -> client_pwd, APIURL -> api_url, LLM -> llm
+// 例如: EmailConfig -> email, ClientPwd -> client_pwd, APIURL -> apiurl, LLM -> llm
 // 自动去除 Config 后缀
 // 规则：
-// 1. 全大写词（如 LLM）直接转小写
-// 2. 驼峰词（如 ClientPwd）在每个大写字母前加下划线
-// 3. 连续大写+小写混合（如 HTTPServer）在连续大写和后续小写的分界处加下划线
+// 1. 驼峰词（如 ClientPwd, MiniMax）在每个大写字母前加下划线
+// 2. 连续大写字母：
+//    - 如果最后一个字母是大写，整个转小写（如 APIURL -> apiurl, LLM -> llm）
+//    - 如果最后一个字母后面是小写，以该大写字母作为分界线（如 LLMData -> llm_data, APIKey -> api_key）
 func toLowerSnakeCase(s string) string {
 	if s == "" {
 		return s
 	}
 
-	// 先去除 Config 后缀（不区分大小写）
+	// 先去除 Config 后缀
 	s = strings.TrimSuffix(s, "Config")
 	s = strings.TrimSuffix(s, "CONFIG")
 
@@ -237,49 +238,56 @@ func toLowerSnakeCase(s string) string {
 		c := s[i]
 
 		if c >= 'A' && c <= 'Z' {
-			// 判断当前大写字母的类型
+			// 当前是大写字母
 			if i == 0 {
-				// 第一个字符是大写
-				if i+1 < length && s[i+1] >= 'a' && s[i+1] <= 'z' {
-					// 后面是小写，如 Email -> E-mail
-					result.WriteByte(c)
-				} else {
-					// 后面是大写或非字母
-					result.WriteByte(c)
-				}
+				// 第一个字符，直接写入
+				result.WriteByte(c)
 			} else {
 				prev := s[i-1]
-				if i+1 < length {
-					next := s[i+1]
-					if prev >= 'a' && prev <= 'z' {
-						// 前一个是小写，在大写前加下划线，如 ClientPwd -> client_Pwd
-						result.WriteRune('_')
-						result.WriteByte(c)
-					} else if prev >= 'A' && prev <= 'Z' {
-						// 前一个是大写
-						if next >= 'a' && next <= 'z' {
-							// 前大写后小写，分界处加下划线，如 HTTPServer -> http_Server
-							result.WriteRune('_')
-							result.WriteByte(c)
-						} else {
-							// 前后都是大写，不加下划线，如 APIURL -> APIURL
-							result.WriteByte(c)
+				if prev >= 'a' && prev <= 'z' {
+					// 前一个是小写，在大写前加下划线
+					result.WriteRune('_')
+					result.WriteByte(c)
+				} else if prev >= 'A' && prev <= 'Z' {
+					// 前一个也是大写，需要判断是否要加分隔
+					// 找到前面连续大写的开始位置
+					j := i - 1
+					for j > 0 && s[j] >= 'A' && s[j] <= 'Z' {
+						j--
+					}
+					if s[j] >= 'A' && s[j] <= 'Z' {
+						j = 0 // 全是连续大写
+					}
+
+					// 看当前字符后面是否还有字母
+					hasNext := false
+					hasNextLower := false
+					for k := i + 1; k < length; k++ {
+						if (s[k] >= 'a' && s[k] <= 'z') || (s[k] >= 'A' && s[k] <= 'Z') {
+							hasNext = true
+							if s[k] >= 'a' && s[k] <= 'z' {
+								hasNextLower = true
+							}
+							break
 						}
-					} else {
-						// 前一个不是字母
-						result.WriteByte(c)
 					}
-				} else {
-					// 最后一个字符
-					if prev >= 'a' && prev <= 'z' {
+
+					if !hasNext {
+						// 后面没有字母了，整个连续大写转小写
+						// 不加分隔
+					} else if hasNextLower {
+						// 后面是小写，在当前位置加分隔
 						result.WriteRune('_')
-						result.WriteByte(c)
-					} else {
-						result.WriteByte(c)
 					}
+					// 后面还是大写，不加分隔
+					result.WriteByte(c)
+				} else {
+					// 前一个不是字母
+					result.WriteByte(c)
 				}
 			}
 		} else {
+			// 小写字母直接写入
 			result.WriteByte(c)
 		}
 	}
