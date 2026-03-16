@@ -215,24 +215,76 @@ const (
 )
 
 // ToLowerSnakeCase 将驼峰字符串转为小写下划线
-// 例如: EmailConfig -> email, ClientPwd -> client_pwd
+// 例如: EmailConfig -> email, ClientPwd -> client_pwd, APIURL -> api_url, LLM -> llm
 // 自动去除 Config 后缀
+// 规则：
+// 1. 全大写词（如 LLM）直接转小写
+// 2. 驼峰词（如 ClientPwd）在每个大写字母前加下划线
+// 3. 连续大写+小写混合（如 HTTPServer）在连续大写和后续小写的分界处加下划线
 func toLowerSnakeCase(s string) string {
+	if s == "" {
+		return s
+	}
+
+	// 先去除 Config 后缀（不区分大小写）
+	s = strings.TrimSuffix(s, "Config")
+	s = strings.TrimSuffix(s, "CONFIG")
+
 	var result strings.Builder
-	for i, r := range s {
-		if i > 0 && r >= 'A' && r <= 'Z' {
-			result.WriteRune('_')
+	length := len(s)
+
+	for i := 0; i < length; i++ {
+		c := s[i]
+
+		if c >= 'A' && c <= 'Z' {
+			// 判断当前大写字母的类型
+			if i == 0 {
+				// 第一个字符是大写
+				if i+1 < length && s[i+1] >= 'a' && s[i+1] <= 'z' {
+					// 后面是小写，如 Email -> E-mail
+					result.WriteByte(c)
+				} else {
+					// 后面是大写或非字母
+					result.WriteByte(c)
+				}
+			} else {
+				prev := s[i-1]
+				if i+1 < length {
+					next := s[i+1]
+					if prev >= 'a' && prev <= 'z' {
+						// 前一个是小写，在大写前加下划线，如 ClientPwd -> client_Pwd
+						result.WriteRune('_')
+						result.WriteByte(c)
+					} else if prev >= 'A' && prev <= 'Z' {
+						// 前一个是大写
+						if next >= 'a' && next <= 'z' {
+							// 前大写后小写，分界处加下划线，如 HTTPServer -> http_Server
+							result.WriteRune('_')
+							result.WriteByte(c)
+						} else {
+							// 前后都是大写，不加下划线，如 APIURL -> APIURL
+							result.WriteByte(c)
+						}
+					} else {
+						// 前一个不是字母
+						result.WriteByte(c)
+					}
+				} else {
+					// 最后一个字符
+					if prev >= 'a' && prev <= 'z' {
+						result.WriteRune('_')
+						result.WriteByte(c)
+					} else {
+						result.WriteByte(c)
+					}
+				}
+			}
+		} else {
+			result.WriteByte(c)
 		}
-		result.WriteRune(r)
-	}
-	resultStr := strings.ToLower(result.String())
-
-	// 去除 Config 后缀
-	if strings.HasSuffix(resultStr, "_config") {
-		resultStr = strings.TrimSuffix(resultStr, "_config")
 	}
 
-	return resultStr
+	return strings.ToLower(result.String())
 }
 
 // ParseConfigStruct 解析配置结构体
