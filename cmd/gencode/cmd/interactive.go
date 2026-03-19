@@ -313,7 +313,7 @@ func handleCreateNewEntity() {
 		fmt.Printf("0. 不使用父级目录\n")
 		fmt.Print("请输入选项编号: ")
 
-		// 选项范围是 0 到 len(controllerDirs)
+		// 选项范围是 1 到 len(controllerDirs)，0 表示不使用父级目录
 		maxChoice := len(controllerDirs)
 		dirChoice := readChoiceWithDefault(maxChoice)
 
@@ -322,9 +322,11 @@ func handleCreateNewEntity() {
 			return
 		}
 
-		// dirChoice 是从 0 开始的索引，所以 dirChoice > 0 表示选择了某个父级目录
-		if dirChoice > 0 {
-			parentDir = controllerDirs[dirChoice-1]
+		fmt.Printf("DEBUG: len(controllerDirs)=%d, dirChoice=%d\n", len(controllerDirs), dirChoice)
+
+		// dirChoice 是从 0 开始的索引（0 表示不使用父级目录，1 表示第一个目录，以此类推）
+		if dirChoice > 0 && dirChoice <= len(controllerDirs) {
+			parentDir = controllerDirs[dirChoice]
 		}
 	}
 
@@ -383,7 +385,7 @@ func handleGenCrudForExisting(existingEntities []string) {
 		fmt.Printf("0. 不使用父级目录\n")
 		fmt.Print("请输入选项编号: ")
 
-		// 选项范围是 0 到 len(controllerDirs)
+		// 选项范围是 1 到 len(controllerDirs)，0 表示不使用父级目录
 		maxChoice := len(controllerDirs)
 		dirChoice := readChoiceWithDefault(maxChoice)
 
@@ -392,9 +394,11 @@ func handleGenCrudForExisting(existingEntities []string) {
 			return
 		}
 
-		// dirChoice 是从 0 开始的索引，所以 dirChoice > 0 表示选择了某个父级目录
-		if dirChoice > 0 {
-			parentDir = controllerDirs[dirChoice-1]
+		fmt.Printf("DEBUG: len(controllerDirs)=%d, dirChoice=%d\n", len(controllerDirs), dirChoice)
+
+		// dirChoice 是从 0 开始的索引（0 表示不使用父级目录，1 表示第一个目录，以此类推）
+		if dirChoice > 0 && dirChoice <= len(controllerDirs) {
+			parentDir = controllerDirs[dirChoice]
 		}
 	}
 
