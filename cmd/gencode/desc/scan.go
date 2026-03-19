@@ -5,6 +5,7 @@ import (
 	"ginp-api/internal/gen"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -56,6 +57,9 @@ func ScanControllerDirs() []string {
 			dirs = append(dirs, dirName)
 		}
 	}
+
+	// 排序以确保输出顺序稳定
+	sort.Strings(dirs)
 
 	return dirs
 }
