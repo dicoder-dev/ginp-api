@@ -8,21 +8,21 @@ import (
 
 const tableNameTest = "test"
 
-type Test struct {
+type TestEnum struct {
 	ID uint `json:"id"`
 	//... other fields
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" `
 }
 
-var _ typ.IEntity = (*Test)(nil) // U实体必须实现接口GenConfig
+var _ typ.IEntity = (*TestEnum)(nil) // U实体必须实现接口GenConfig
 
-func (Test) GenConfig() *gen.EntityConfig {
+func (TestEnum) GenConfig() *gen.EntityConfig {
 	return &gen.EntityConfig{
 		TableName: tableNameTest,
 	}
 }
 
-func (Test) TableName() string {
+func (TestEnum) TableName() string {
 	return tableNameTest
 }
