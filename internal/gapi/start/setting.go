@@ -13,4 +13,5 @@ var EntityAutoMigrateList = []any{
 // 开始公用EntityAutoMigrateList，但是考虑到隔离，还是分开了，可以按需将生成实体写入
 var EntityGenerationList = []any{
 	new(entity.User),
+	new(entity.Test),
 }
