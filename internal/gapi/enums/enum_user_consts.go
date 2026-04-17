@@ -8,3 +8,9 @@ const (
 	EnumUserStatus2 = "2" // 禁用
 	EnumUserStatus3 = "3" // 注销
 )
+
+var EnumUserStatusLabelMap = map[string]string{
+	EnumUserStatus1: "正常",
+	EnumUserStatus2: "禁用",
+	EnumUserStatus3: "注销",
+}

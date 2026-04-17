@@ -23,7 +23,7 @@ email:
         port: 465
         pwd: "12345"
 server:
-    port: "8083"
+    port: "8085"
 system:
     app:
         name: dianji
@@ -37,6 +37,7 @@ tencent:
     cos:
         allow_prefix: ""
         bucket_app_i_d: ""
+        bucket_app_id: ""
         bucket_appid: ""
         bucket_name: ""
         duration: 0

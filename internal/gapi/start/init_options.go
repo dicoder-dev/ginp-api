@@ -40,12 +40,20 @@ func initOptions() {
 			continue
 		}
 
-		content, err := buildEnumConstFile(entityName, entityItem.GenEnumOptions())
+		filePath := filepath.Join(enumDir, enumFilePrefix+gen.NameToLine(entityName)+"_consts.go")
+		enumItems := normalizeEnumItems(entityItem.GenEnumOptions())
+		if len(enumItems) == 0 {
+			if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
+				panic(fmt.Errorf("删除空枚举文件 %s 失败: %w", filePath, err))
+			}
+			continue
+		}
+
+		content, err := buildEnumConstFile(entityName, enumItems)
 		if err != nil {
 			panic(fmt.Errorf("生成 %s 枚举常量失败: %w", entityName, err))
 		}
 
-		filePath := filepath.Join(enumDir, enumFilePrefix+gen.NameToLine(entityName)+"_consts.go")
 		if err := os.WriteFile(filePath, content, 0644); err != nil {
 			panic(fmt.Errorf("写入 %s 失败: %w", filePath, err))
 		}
@@ -71,6 +79,18 @@ func buildEnumConstFile(entityName string, enumItems []typ.EntityEnumOption) ([]
 			}
 		}
 		builder.WriteString(")\n")
+	}
+
+	for _, enumItem := range enumItems {
+		groupName := enumConstPrefix + entityName + gen.NameToCameBig(enumItem.FieldName)
+		builder.WriteString("\n")
+		builder.WriteString("var " + groupName + "LabelMap = map[string]string{\n")
+		for _, value := range sortedOptionValues(enumItem.Options) {
+			label := enumItem.Options[value]
+			constName := groupName + toConstNamePart(value)
+			builder.WriteString(fmt.Sprintf("\t%s: %q,\n", constName, label))
+		}
+		builder.WriteString("}\n")
 	}
 
 	formatted, err := format.Source(builder.Bytes())

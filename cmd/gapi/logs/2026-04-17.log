@@ -1,0 +1,56 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.html
+
+[GIN-debug] GET    /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /assets/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /assets/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/login_by_email --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/login_by_username --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/user/register_by_email --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/create      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/delete      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/findById    --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/search      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/update      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/user/update_user_info --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8083
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] Loaded HTML Templates (2): 
+	- 
+	- index.html
+
+[GIN-debug] GET    /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /assets/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /assets/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/login_by_email --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/login_by_username --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/user/register_by_email --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/create      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/delete      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/findById    --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/search      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/sys_user/update      --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] POST   /api/user/update_user_info --> ginp-api/pkg/ginp.BindParamsHandler.func1 (5 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8085
